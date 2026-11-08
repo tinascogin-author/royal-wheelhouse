@@ -54,6 +54,12 @@ Install Node.js, open a terminal in this folder, and run `npm start` (or `node s
 
 Use localhost or HTTPS rather than opening index.html directly. After the page displays **Offline ready**, it can reload without the server or network. You may install it from your browser's app/install menu where supported. Keep using the same browser and origin: changing from localhost to a hosted URL does not transfer local data.
 
+## Install on Princess's computer
+
+Open the GitHub Pages address in Chrome or Edge and choose **Install app** beside Party room, Collections, and Archives. The installation panel offers the browser's native install prompt when available, or shows the browser-menu route when it isn't. Wait for **Offline ready**, then open The Royal Wheelhouse from the installed app icon to play without a network connection. No local server is required. Installation and offline caching are separate: caching must finish while online. An embedded chat browser may not offer installation, so use a regular browser on the actual party computer.
+
+The app bundles 192px and 512px PNG icons for browser installation. The native confirmation is controlled by the browser; declining it leaves the website usable. Installing does not copy data from another browser profile or another website address. Export and import a backup when moving that data.
+
 ## GitHub Pages publishing
 
 No build step is required. The static build includes index.html, style.css, royal.css, enchanted.css, magic.css, layout.css, app.js, core.js, magic-reveals.js, sounds.js, sw.js, manifest.webmanifest, icon.svg, and the assets folder in the Pages artifact. All paths are relative, including the service-worker scope, so repository subdirectories work. This repository is configured for GitHub Pages.
