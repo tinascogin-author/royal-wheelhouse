@@ -1,0 +1,6 @@
+dist/
+node_modules/
+*.jpg
+*.tar.gz
+*backup*.json
+.openai/

@@ -1,0 +1,46 @@
+/* Desktop host layout: categories on the left, spectacle and result side by side. */
+.spoonWindow{position:absolute;inset:0;z-index:5;clip-path:polygon(0 0,100% 0,100% 35.5%,0 35.5%);pointer-events:none}.liquidVeil{position:absolute;top:28%;left:23%;width:54%;height:9%;border-radius:50%;z-index:6;background:linear-gradient(transparent,#b36cf530);pointer-events:none}.brewSurface{z-index:7}
+.tarotOrientation{position:absolute;bottom:0;left:50%;transform:translateX(-50%);font:10px Georgia,serif;letter-spacing:1.5px;color:#ffe5ad;white-space:nowrap;z-index:5;padding:4px 10px;border-radius:20px;background:#29122be6}.tarotOrientation:empty{display:none}.tarotScene.reversed .tarotFace{transform:rotateY(180deg) rotateZ(180deg)}
+@media(min-width:761px){
+  header{min-height:78px;padding:10px 20px 5px}.brand{font-size:0}.brand>span{font-size:32px;line-height:1.25}.brand small{font-size:18px;margin-top:2px}header #soundToggle,header #newParty{top:17px}
+  main{max-width:1280px;padding:0 25px 6px}nav{margin-bottom:8px;gap:12px}nav button{padding:3px 12px}
+  #play{display:grid;grid-template-columns:148px minmax(0,1fr);grid-template-rows:auto auto auto;gap:8px 20px;align-items:start}
+  .showSelector{grid-column:1;grid-row:1/4;display:flex;flex-direction:column;align-items:stretch;align-self:start;position:sticky;top:16px;width:100%;margin:0;padding:7px;gap:3px;border-radius:12px}
+  .showSelector button{flex:0 0 auto;flex-direction:row;justify-content:flex-start;gap:10px;text-align:left;padding:10px 8px;border-right:0;border-bottom:1px solid #ba8f4d33;border-radius:5px;min-height:51px}.showSelector button:last-child{border:0}.showSelector button .categoryIcon svg{width:24px;height:24px;margin:0}.showSelector button span:last-child{font-size:17px}.showSelector button.selected{padding:9px 7px}
+  .partybar{grid-column:2;grid-row:1;padding:4px 15px;margin:0 auto;min-height:34px}.partybar label:nth-child(2){font-size:13px}.partybar input#handle{font-size:15px;padding:3px 6px}
+  .games{grid-column:2;grid-row:2;min-width:0;margin:0;padding:0;--scene-size:min(440px,calc(100dvh - 270px),36vw)}
+  .games #gridStage,.games #crystalStage{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);grid-template-rows:auto minmax(0,1fr) auto auto auto minmax(0,1fr);gap:8px 20px;max-width:none;align-items:center;min-width:0;position:relative}
+  .games .panelHeading{position:static;grid-column:2;grid-row:1;display:block;text-align:center;min-height:20px}.games .panelHeading .badge{font-size:10px}.bankSelect{grid-column:1;grid-row:1;display:flex;margin:0;gap:6px;justify-content:center;font-size:10px;min-width:0}.bankSelect select{max-width:180px;font-size:11px;padding:3px 8px}
+  .games .wheelScene,.games .crystalScene,.games .magicScene{grid-column:1;grid-row:2/7;width:var(--scene-size);max-width:100%;height:auto;aspect-ratio:1;margin:0 auto;transform:none}
+  .games .resultCallout,.games .crystalPanel .resultCallout{grid-column:2;grid-row:3;min-width:0;width:100%;min-height:0;padding:13px 20px;margin:0;align-self:center}
+  .games .resultCallout .reveal,.games .crystalPanel .reveal{font-size:clamp(28px,3.2vw,45px);margin-top:6px;line-height:1.13}.games .resultCallout .eyebrow{font-size:8px;letter-spacing:1px}.games .resultCallout>p:last-child:not(.reveal){font-size:16px;line-height:1.45;margin-top:9px;max-height:min(180px,25vh);overflow:auto;padding-right:3px}.games .resultCallout>p:empty{display:none}
+  .games .primary{grid-column:2;grid-row:4;width:max-content;max-width:95%;min-width:0;margin:8px auto 0;padding:10px 22px;font-size:clamp(16px,1.5vw,21px);letter-spacing:.3px}.games .primary:before{left:-23px}.games .primary:after{right:-23px}.skipReveal{grid-column:2;grid-row:5;margin:0 auto;padding:2px 8px;font-size:11px}.games .hint{grid-column:2;grid-row:6;align-self:start;padding:0;margin:5px auto 0;font-size:10px;text-align:center}
+  .replacementControl{grid-column:2;grid-row:2;width:100%;align-self:end;margin:0;padding:8px 10px}.replacementControl label{display:block;font-size:11px}.replacementControl select{margin-top:5px;max-width:100%;width:100%;font-size:11px}.replacementControl p{font-size:10px;line-height:1.4}.games .crystalPanel>.eyebrow,.games .crystalPanel>h2{display:none}
+  .decrees{grid-column:2;grid-row:3;margin:8px 0 0;max-width:none;min-width:0;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto}.decrees>div{padding:7px 12px}.decrees .eyebrow{font-size:13px}.decrees p{font-size:12px;line-height:1.4;max-height:75px;overflow:auto}.decrees .hostLinks{gap:6px;flex-direction:column;justify-content:center;padding:5px 10px}.hostLinks button{font-size:11px;padding:4px 8px;white-space:nowrap}footer{padding:12px 0 0;font-size:9px}
+  .tarotFace p{font-size:clamp(14px,1.5vw,20px)}.cardCelestial{font-size:clamp(50px,6vw,80px)}.cardCrown{font-size:24px}.cardFoot{font-size:6px}.mirrorGlass p{font-size:clamp(14px,1.4vw,20px)}
+}
+@media(min-width:761px) and (max-height:740px){
+  header{min-height:66px;padding-top:6px}.brand>span{font-size:28px}.brand small{font-size:16px}.games{--scene-size:min(380px,calc(100dvh - 245px),35vw)}.showSelector button{min-height:45px;padding-top:7px;padding-bottom:7px}.showSelector button.selected{padding-top:6px;padding-bottom:6px}.games .resultCallout .reveal{font-size:32px}.games .resultCallout>p:last-child:not(.reveal){font-size:14px;max-height:125px}.decrees>div{padding-top:5px;padding-bottom:5px}footer{padding-top:8px}
+}
+@media(min-width:761px) and (max-width:1060px){#play{grid-template-columns:120px minmax(0,1fr);column-gap:14px}.showSelector button{gap:7px;padding-left:5px;padding-right:5px}.showSelector button span:last-child{font-size:15px}.games #gridStage,.games #crystalStage{column-gap:13px}.bankSelect{flex-wrap:wrap}.bankSelect select{max-width:150px}.games .primary{font-size:16px;padding-left:17px;padding-right:17px}.partybar label:nth-child(2){font-size:12px}.partybar{padding-left:8px;padding-right:8px;gap:6px}.decrees{grid-template-columns:1fr 1fr}.decrees .hostLinks{grid-column:1/-1;flex-direction:row;border-top:1px solid #9f753d66;border-left:0}.games .resultCallout .reveal{font-size:30px}}
+@media(max-width:760px){.tarotOrientation{font-size:9px;padding:3px 8px}.games .resultCallout>p:empty{display:none}}
+
+/* Leave the palace arch unobstructed; the title belongs inside the room. */
+@media(min-width:761px){
+  header{padding-top:clamp(72px,8dvh,104px);padding-bottom:7px;min-height:0}
+  .brand>span{font-size:30px;line-height:1.25;padding:0 14px;background:radial-gradient(ellipse,#1b0b24bb,transparent 72%);text-shadow:0 2px 4px #14071c,0 0 20px #14071c}
+  .brand small{font-size:18px}
+  header #soundToggle,header #newParty{top:calc(clamp(72px,8dvh,104px) + 12px)}
+  .games{--scene-size:min(400px,calc(100dvh - 350px),35vw)}
+}
+@media(min-width:761px) and (max-height:740px){
+  header{padding-top:72px;padding-bottom:5px}.brand>span{font-size:28px}.brand small{font-size:16px}
+  header #soundToggle,header #newParty{top:82px}
+  .games{--scene-size:min(340px,calc(100dvh - 370px),33vw)}
+  .games #gridStage:has(.replacementControl:not([hidden])){grid-template-rows:auto auto auto auto auto minmax(0,1fr)}
+  .replacementControl{padding:6px 9px}.replacementControl p{margin-top:3px}.replacementControl select{padding-top:4px;padding-bottom:4px}
+}
+@media(max-width:760px){
+  header{padding-top:55px;min-height:0}
+  .brand>span{background:radial-gradient(ellipse,#1b0b24dd,transparent 80%);text-shadow:0 2px 4px #14071c}
+}

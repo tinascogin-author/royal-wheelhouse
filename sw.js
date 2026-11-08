@@ -1,0 +1,5 @@
+const CACHE='royal-wheelhouse-v6-laptop-title-review2';
+const ASSETS=['./','./index.html','./style.css','./royal.css','./enchanted.css','./magic.css','./layout.css','./app.js','./core.js','./sounds.js','./magic-reveals.js','./manifest.webmanifest','./icon.svg','./assets/palace.png','./assets/word-wheel.png','./assets/curse-crystal.png','./assets/cauldron.png','./assets/poison-flask.png','./assets/tarot-back.png','./assets/magic-mirror.png'];
+self.addEventListener('install',event=>event.waitUntil(caches.open(CACHE).then(c=>c.addAll(ASSETS)).then(()=>self.skipWaiting())));
+self.addEventListener('activate',event=>event.waitUntil(caches.keys().then(keys=>Promise.all(keys.filter(k=>k.startsWith('royal-wheelhouse-')&&k!==CACHE).map(k=>caches.delete(k)))).then(()=>self.clients.claim())));
+self.addEventListener('fetch',event=>{if(event.request.method!=='GET'||new URL(event.request.url).origin!==self.location.origin)return;event.respondWith(caches.match(event.request).then(cached=>cached||fetch(event.request)));});
