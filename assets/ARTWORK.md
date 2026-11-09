@@ -11,3 +11,7 @@ Created with the built-in ImageGen tool using the approved game-room concept as 
 - `magic-mirror.png`: A transparent front-facing oval mirror with a crown crest, elaborate gold filigree, amethyst gems and a calm smoky silver-purple glass center. Code adds ripples, moving mist, and the live challenge.
 
 These are generated production assets rather than screenshots of a working app. The game controls, result text, saving, random selection, and animations are implemented in HTML/CSS/JavaScript.
+
+- story-spindle.png: gilded amethyst spindle, purple silk, and luminous thread; live animation adds rotation and thread light.
+- tense-tiara.png: elaborate gold tiara with three dark oval settings; the three animated HTML gems are layered above the artwork.
+- perspective-portal.png: jeweled gold arch with violet magical mist, repeated in the nine-square board with live viewpoint labels.

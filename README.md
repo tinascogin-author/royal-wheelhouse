@@ -2,9 +2,9 @@
 
 A free, dependency-free Princess Prompt Party app. All banks, parties, and results stay in this browser's local storage. No account, server database, analytics, fonts, or paid services.
 
-## The seven royal reveals
+## The ten royal reveals
 
-The main screen presents an illustrated palace game room with seven categories. The victim registry opens as a drawer; collections, archives, and setup remain accessible without occupying the stage. All reveals offer Skip and honor the browser's reduced-motion preference. Results are selected and saved before the theater begins.
+The main screen presents an illustrated palace game room with ten categories. The victim registry opens as a drawer; collections, archives, and setup remain accessible without occupying the stage. All reveals offer Skip and honor the browser's reduced-motion preference. Results are selected and saved before the theater begins.
 
 The illustrated wheel spins and slows under a fixed jeweled pointer, followed by a large prompt and its description. Its decorative segments represent the theater; the pointer does not select the word. TEMPT FATE activates the mist, pulse, and lightning in the illustrated crystal; its verdict reads YOU ARE CURSED! or YOU ESCAPED!, alongside the current curse. The local artwork, CSS, and SVG work offline. A per-handle counter helps the host track three word prompts, without preventing her from making additional draws.
 
@@ -18,7 +18,7 @@ The illustrated wheel spins and slows under a fixed jeweled pointer, followed by
 | Genre | Jeweled spinning wheel | SPIN ME A STORY |
 | Magic Mirror | Mist, ripples and a mandatory challenge | MIRROR, MIRROR… |
 
-Collections include editable starter entries rather than complete curated libraries. Existing banks and parties retain the same storage key and backup format. Poisons is added once to older installations without replacing any existing bank. Sparkle intensity and animation speed settings remain future polish.
+Collections ship with a ready-to-play curated starter library: everyday and seasonal words, all 78 Tarot cards, Potions, Poisons, character-specific Magic Mirror challenges, and genres. Every entry remains editable. Untouched original samples expand in place; edited lists are preserved and receive a separate Royal Library collection. The expansion runs only once, so deleted collections stay deleted. Existing banks and parties retain the same storage key and backup format. Poisons is added once to older installations without replacing any existing bank. Sparkle intensity and animation speed settings remain future polish.
 
 ## Screen layout and Tarot orientation
 
@@ -28,7 +28,7 @@ The cauldron spoon is layered above the illustrated potion, with its submerged e
 
 Tarot draws the card and then independently selects Upright or Reversed, each with a 50% chance. A reversed card appears upside down; the large callout remains right-side up. The orientation and the meaning used for the draw are saved with the result, included in copied results, and preserved in backups. Earlier results are not retroactively changed.
 
-For Tarot collections use `card name | upright meaning | reversed meaning` when pasting, uploading, or editing. Other collection types still use `name | optional description`. The three starter cards have separate reversed descriptions. Custom cards without a reversed description show a clear missing-meaning message when reversed, rather than reusing the upright meaning. Both fields are editable: reversals are not universally negative. Starter interpretations follow common themes summarized in [Labyrinthos's Tarot meanings](https://labyrinthos.co/blogs/tarot-card-meanings-list) and [reversal guide](https://labyrinthos.co/blogs/learn-tarot-with-labyrinthos-academy/how-to-interpret-reversed-tarot-cards).
+For Tarot collections use `card name | upright meaning | reversed meaning` when pasting, uploading, or editing. Other collection types still use `name | optional description`. All 78 starter cards have separate upright and reversed descriptions. Custom cards without a reversed description show a clear missing-meaning message when reversed, rather than reusing the upright meaning. Both fields are editable: reversals are not universally negative. Starter Tarot descriptions are original, concise writing interpretations using familiar card themes, rather than predictions. Historical reference: [A. E. Waite’s public-domain Pictorial Key to the Tarot](https://sacred-texts.com/tarot/pkt/pkttp.htm).
 
 ## Sound
 
@@ -76,3 +76,9 @@ No build step is required. The static build includes index.html, style.css, roya
 ## Offline updates
 
 All app assets are cached by sw.js. When changing app files for a future release, change its CACHE version so the new install refreshes the assets. Offline capability does not provide cloud synchronization.
+
+## Princess collection expansion
+
+Story Spindle weaves a glowing thread and reveals a structure and definition. Perspective Portal lights a nine-square portal board and reveals a point of view and definition. Tense Tiara lights three gems and crowns Past, Present, or Future. All use the same secure selection, save-before-animation, Skip, reduced-motion, copy, backup, and collection editing behavior as the other categories. Custom entries also work with each reveal.
+
+Princess supplied 78 Tarot entries, 233 Mirror challenges, 14 structures, 9 perspectives, 3 tenses, 34 genres, 50 potions, and 50 poisons. Source wording is preserved in princess-library.js. Untouched built-in lists expand in place. Edited lists are preserved with a separate Royal Library collection added once. Word and seasonal banks remain available. This update does not rewrite historical results.

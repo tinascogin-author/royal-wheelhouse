@@ -1,3 +1,4 @@
+import {createStarterBanks,populateStarters} from './starter-library.js';
 import {randomIndex,normalize,available,parseEntries,chunks,partyId,validateBackup,addResult,removeResult,replacementChoices,drawTarot,formatEntries} from './core.js';
 import {createSoundSystem} from './sounds.js';
 import {createRevealStage,revealDetails} from './magic-reveals.js';
@@ -6,7 +7,7 @@ const uid=()=>crypto.randomUUID();
 const today=()=>{const d=new Date();return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`;};
 const makeParty=(date=today(),decree='Write boldly. Delight the court.',curse='Include an unexpected royal interruption.')=>({id:uid(),date,decree,curse,handle:'',used:[],results:[]});
 const bank=(name,type,text)=>({id:uid(),name,type,entries:parseEntries(text)});
-function initial(){const p=makeParty();return {version:1,active:p.id,parties:[p],banks:[bank('The Royal Collection','Words','Velvet\nWhisper\nCrown\nMidnight\nThorn\nSecret\nLantern\nPromise\nStorm\nEmber\nRibbon\nMirror\nWander\nSpell\nGarden\nRebellion\nMoonlight\nKey\nMasquerade\nDragon\nHoney\nGhost\nSilver\nWildflower\nRuins\nLetter\nDagger\nWish\nOcean\nStarlight\nBetrayal\nTea\nCastle\nFeather\nDawn\nFable'),bank('Halloween','Words','Haunted\nPumpkin\nWitch\nCobweb\nGraveyard\nSpecter\nCauldron\nRaven\nFangs\nCandle'),bank('Thanksgiving','Words','Harvest\nGratitude\nFeast\nHomecoming\nCranberry\nHearth\nOrchard\nGathering\nCornucopia'),bank('Christmas','Words','Mistletoe\nSnowfall\nEvergreen\nSleigh\nGift\nGingerbread\nCarol\nHolly\nFrost'),bank('Tarot','Tarot','The Fool | A leap of faith and a new beginning.\nThe Magician | Turn intention into action.\nThe Moon | Uncertainty, dreams, and hidden truths.'),bank('Potions','Potions','Truth Serum | Your character cannot tell a lie for one scene.\nLiquid Courage | Attempt the thing your character fears most.\nMemory Mist | An important memory disappears.'),bank('Magic Mirror','Magic Mirror','The Other Side | Write a scene from your rival’s perspective.\nUnmasked | Reveal a secret your character has kept.\nReflection | Meet an alternate version of yourself.'),bank('Genre Genie','Genre Genie','Cozy mystery | A gentle puzzle in a close-knit community.\nSpace opera | A sweeping adventure among the stars.\nGothic romance | Love and dread in a haunting setting.') ]};}
+function initial(){const p=makeParty();return {version:1,active:p.id,parties:[p],banks:createStarterBanks(uid)};}
 let state;
 try{const raw=localStorage.getItem(key);state=raw?validateBackup(JSON.parse(raw)):initial();}catch(e){state=initial();setTimeout(()=>toast('Saved data could not be loaded. Export any recovery data before continuing.'),100);}
 
@@ -20,6 +21,7 @@ function upgrade(s){
 
   s.settings ||= {sound:true};s.features ||= {};
   if(!s.features.poisons){if(!s.banks.some(b=>b.type==='Poisons'))s.banks.push(bank('Poisons','Poisons','Poison of Grumbling | A complaint reaches the ears of the person it concerns.\nPoison of Exaggeration | A detail grows more impressive every time it is repeated.\nPoison of Echoes | A character accidentally repeats a secret aloud.'));s.features.poisons=true;}
+  populateStarters(s,uid);
   return s;
 }
 upgrade(state);
@@ -39,7 +41,7 @@ function render(){const p=party();chooseStage(false);resetStage();$('partyId').v
 function resetStage(){stage.reset();$('wordReveal').textContent='Let fate choose.';$('wordDescription').textContent='';$('wordCaption').textContent='YOUR STORY BEGINS WITH…';$('wordCallout').classList.remove('revealed');$('ballReveal').textContent='Will you escape?';$('ballCaption').textContent='A QUESTION ONLY FATE CAN ANSWER';$('verdictCurse').textContent='';$('answer').textContent='✧';$('orb').classList.remove('cursed','escaped');$('sparkles').replaceChildren();}
 function renderGrid(){
   const b=selectedBank(),entries=available(b,party().used);
-  stage.configure(b.type);$('remaining').textContent=entries.length+' '+(b.type==='Words'?'words remaining':'entries');
+  stage.configure(b.type,b.entries);$('remaining').textContent=entries.length+' '+(b.type==='Words'?'words remaining':'entries');
   $('spin').disabled=busy||!entries.length;syncCategory(b.type);updateProgress();renderReplacements();
 }
 function syncCategory(type){

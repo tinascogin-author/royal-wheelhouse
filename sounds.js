@@ -21,6 +21,7 @@ export function createSoundSystem(initial=true,environment=globalThis){
   function stop(){timers.forEach(cancel);timers=[];voices.forEach(v=>{try{v.stop();}catch{}});voices=[];}
   function start(kind,duration,degrees=2000){stop();unlock();if(!enabled||!context||duration<=0)return;
     if(kind==='Words'||kind==='Genre Genie'){wheelClickTimes(degrees,duration).forEach(ms=>later(()=>tone(900,.018,.025,'triangle',170),ms));return;}
+    if(kind==='Perspective Portal'||kind==='Tense Tiara'){[0,140,290,460,660,900,1190,1530,1940,2440,3040,3700].filter(ms=>ms<duration).forEach((ms,i)=>later(()=>tone(700+(i%3)*120,.06,.018,'triangle'),ms));return;}
     if(kind==='Tarot'){for(let i=0;i<10;i++)later(()=>tone(300+i*25,.055,.018,'triangle',100),i*240);return;}
     if(kind==='Potions'||kind==='Poisons'){for(let i=0;i<17;i++)later(()=>tone(160+(i%5)*42,.12,.025,'sine',400+(i%4)*90),i*(duration/18));return;}
     tone(kind==='Magic Mirror'?220:146,Math.min(duration/1000,4),.025,'sine',kind==='Magic Mirror'?440:220);

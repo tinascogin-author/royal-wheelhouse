@@ -45,3 +45,5 @@ nav .installShortcut{border:1px solid #bd914d88;background:#3e2541bb;color:#ffe2
   header{padding-top:55px;min-height:0}
   .brand>span{background:radial-gradient(ellipse,#1b0b24dd,transparent 80%);text-shadow:0 2px 4px #14071c}
 }
+
+@media(min-width:761px){.showSelector{max-height:calc(100dvh - 215px);overflow-y:auto;scrollbar-width:thin}.showSelector button,.showSelector button.selected{min-height:37px;padding:6px 7px;gap:7px}.showSelector button span:last-child{font-size:14px}}

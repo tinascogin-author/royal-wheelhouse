@@ -31,7 +31,7 @@ export function chunks(text, max = 1000) {
   if (text) result.push(text); return result;
 }
 export function partyId(date) { const [y,m,d] = date.split('-'); return `PPP ${m}${d}${y}`; }
-export const bankTypes = ['Words','Tarot','Potions','Poisons','Magic Mirror','Genre Genie'];
+export const bankTypes = ['Words','Tarot','Potions','Poisons','Magic Mirror','Genre Genie','Story Spindle','Perspective Portal','Tense Tiara'];
 export function replacementChoices(party,handle) {
   return party.results.filter(r=>normalize(r.handle)===normalize(handle) && !r.replacedById && r.type!=='Magic Mirror' && r.kind!=='Magic Mirror');
 }
