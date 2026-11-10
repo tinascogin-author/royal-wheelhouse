@@ -94,3 +94,11 @@ All selections use secure browser randomness before animation. Drawing uniformly
 The Privileges panel is optional and defaults off for each new party. It accepts sprint counts as @handle | words, previews rankings, and awards points only when Princess clicks Award. Places one through five receive 5/4/3/2/1; ties share a place with skipped following places, and zero words earns nothing. Each party sprint can be awarded once. Princess can correct balances with a noted adjustment, approve a transfer, and set each category’s price (default 1). Normal spins default free; select Spend Princess Privileges explicitly to charge. Changing writers or categories returns to free mode. Insufficient balances prevent a paid spin; Skip cannot charge twice. Deleting a result does not refund its payment. Ledger balances carry across parties on this browser and are included in backups, never synced to another device automatically.
 
 Traditional Tarot images are bundled locally for all 78 standard card names, with a decorative fallback for custom names. See assets/TAROT-CREDITS.md for the public-domain Wikimedia Commons sources.
+
+## Palace decorations
+
+Decorate the Palace offers Royal Classic, Christmas, and Halloween. The default is Royal Classic. The choice is saved in settings.palace on this browser and included in backups. It changes only the room illustration and subtle edge particles; collections, active parties, retired prompts, balances, and results stay intact. All three backgrounds are bundled and cached offline. Reduced-motion hides the decorative particles. Switching decorations never activates a seasonal word bank automatically.
+
+## Discord copy formatting
+
+Copy all results and Discord chunks format results by writer, with one handle heading, bold spinner labels, and comma-separated Word draws from each collection. Other repeated spinner draws share a label with semicolon-separated entries. Trade markers stay attached to the individual traded result; Mirror replacement notes, meanings, decree responses, and privilege costs remain visible. The detailed on-screen registry and stored records are unchanged. Discord chunks are still at most 1,000 characters.

@@ -76,5 +76,6 @@ export function validateBackup(s) {
     const balances=new Map();for(const t of v.ledger){if(!['from','to','note','time'].every(k=>str(t[k]))||(!t.from.trim()&&!t.to.trim())||normalize(t.from)===normalize(t.to)||!Number.isSafeInteger(t.amount)||t.amount<=0)throw Error('Invalid privilege transaction');if(t.from){const h=normalize(t.from),n=(balances.get(h)||0)-t.amount;if(n<0)throw Error('Invalid privilege balance');balances.set(h,n);}if(t.to){const h=normalize(t.to);balances.set(h,(balances.get(h)||0)+t.amount);}}
   }
   if(s.settings!==undefined && (!s.settings||typeof s.settings.sound!=='boolean'))throw Error('Invalid sound setting');
+  if(s.settings?.palace!==undefined&&!['classic','christmas','halloween'].includes(s.settings.palace))throw Error('Invalid palace theme');
   return s;
 }

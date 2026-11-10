@@ -1,3 +1,5 @@
+import * as discordFormat from './discord-results.js';
+import * as palaces from './palace-themes.js';
 import * as rules from './party-rules.js';
 import * as privilegeHelpers from './privileges.js';
 import {test} from 'node:test';
@@ -23,9 +25,9 @@ function boot(storage=new Map()){
   const get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
   const tabs=['play','banks','archives'].map(id=>{const e=new Element();e.dataset.tab=id;return e;});
   const categories=['Tarot','Potions','Poisons','Genre Genie','Magic Mirror','Story Spindle','Perspective Portal','Tense Tiara'].map(type=>{const e=new Element();e.dataset.category=type;return e;});
-  const document={getElementById:get,createElement:()=>new Element(),querySelectorAll:s=>s==='nav button'?tabs:s==='[data-category]'?categories:s==='nav button, [data-category]'?[...tabs,...categories]:[],querySelector:s=>tabs.find(t=>s.includes(t.dataset.tab))||tabs[0]};
+  const document={body:{dataset:{}},getElementById:get,createElement:()=>new Element(),querySelectorAll:s=>s==='nav button'?tabs:s==='[data-category]'?categories:s==='nav button, [data-category]'?[...tabs,...categories]:[],querySelector:s=>tabs.find(t=>s.includes(t.dataset.tab))||tabs[0]};
   const localStorage={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)};
-  const context=vm.createContext({...core,...sounds,...reveals,...starters,...rules,...privilegeHelpers,document,localStorage,crypto:webcrypto,console,Date,Blob,URL,navigator:{clipboard:{writeText:async()=>{}}},matchMedia:()=>({matches:reduced}),setTimeout:fn=>{timers.set(++nextTimer,fn);return nextTimer;},clearTimeout:id=>timers.delete(id),confirm:()=>true,prompt:()=>null});
+  const context=vm.createContext({...core,...sounds,...reveals,...starters,...rules,...privilegeHelpers,...palaces,...discordFormat,document,localStorage,crypto:webcrypto,console,Date,Blob,URL,navigator:{clipboard:{writeText:async()=>{}}},matchMedia:()=>({matches:reduced}),setTimeout:fn=>{timers.set(++nextTimer,fn);return nextTimer;},clearTimeout:id=>timers.delete(id),confirm:()=>true,prompt:()=>null});
   vm.runInContext(code,context);
   return {get,storage,context,setReduced:value=>reduced=value,saved:()=>JSON.parse(storage.get('royal-wheelhouse-v1')),category:type=>categories.find(b=>b.dataset.category===type).click()};
 }
@@ -85,4 +87,14 @@ test('sprint awards happen once; paid skip charges once; free spins and insuffic
 
 test('new impromptu parties default privileges off while balances and archived decree choices survive',()=>{
  const a=boot(),g=a.get;g('handle').value='@royal';g('handle').oninput();g('decreeChoice').value='Yes';g('decreeChoice').onchange();g('adjustHandle').value='@royal';g('adjustAmount').value='5';g('adjustPrivileges').click();g('newParty').click();g('date').value='2026-11-11';g('decreeEnabled').checked=false;g('partyForm').onsubmit({preventDefault(){}});const s=a.saved();assert.equal(s.parties[1].decreeEnabled,false);assert.equal(s.parties[1].privilegesEnabled,undefined);assert.equal(s.parties[0].writers[0].decree,'Yes');assert.equal(privilegeHelpers.balance(s.privileges.ledger,'@royal'),5);assert.equal(g('decreeChoiceLabel').hidden,true);assert.equal(g('decreePanel').hidden,true);core.validateBackup(s);
+});
+
+test('palace decorations persist and round-trip in backups without changing party or collection data',()=>{
+ const a=boot(),g=a.get,original=a.saved();g('decoratePalace').click();assert.equal(g('palaceDialog').open,true);
+ for(const [id,theme] of [['palaceChristmas','christmas'],['palaceHalloween','halloween'],['palaceClassic','classic']]){g(id).click();const s=a.saved();assert.equal(s.settings.palace,theme);assert.deepEqual(s.parties,original.parties);assert.deepEqual(s.banks,original.banks);assert.deepEqual(s.privileges,original.privileges);core.validateBackup(JSON.parse(JSON.stringify(s)));const restored=boot(a.storage);assert.equal(restored.saved().settings.palace,theme);assert.equal(restored.get(id).attributes['aria-pressed'],'true');}
+ const invalid=a.saved();invalid.settings.palace='unknown';assert.throws(()=>core.validateBackup(invalid));assert.equal(palaces.palaceTheme('__proto__'),'classic');
+});
+
+test('Discord copy dialog uses grouped formatting while leaving the detailed saved registry unchanged',()=>{
+ const a=boot(),g=a.get;g('handle').value='@copy-writer';g('handle').oninput();g('spin').click();g('spin').click();g('spin').click();const before=a.saved();g('chunks').click();const text=g('chunkList').children.map(part=>part.children[1].value).join('\n');assert.equal((text.match(/@copy-writer/g)||[]).length,1);assert.ok(text.includes('**The Royal Collection:**'));for(const r of before.parties[0].results)assert.ok(text.includes(r.value));assert.deepEqual(a.saved(),before);assert.ok(g('chunkList').children.every(part=>part.children[1].value.length<=1000));
 });
