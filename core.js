@@ -62,6 +62,19 @@ export function validateBackup(s) {
     if(r.replacesId!==undefined){const original=p.results.find(x=>x.id===r.replacesId);if(!str(r.replacesId)||r.type!=='Magic Mirror'||!original||original.replacedById!==r.id||normalize(original.handle)!==normalize(r.handle)||original.id===r.id||original.type==='Magic Mirror'||r.replacedById)throw Error('Invalid Mirror trade');}
     if(r.replacedById!==undefined){const replacement=p.results.find(x=>x.id===r.replacedById);if(!str(r.replacedById)||!replacement||replacement.replacesId!==r.id)throw Error('Invalid Mirror history');}
   }
+  for(const p of s.parties){
+    if(p.decreeEnabled!==undefined&&typeof p.decreeEnabled!=='boolean')throw Error('Invalid decree setting');
+    if(p.privilegesEnabled!==undefined&&typeof p.privilegesEnabled!=='boolean')throw Error('Invalid privileges setting');
+    if(p.writers!==undefined&&(!Array.isArray(p.writers)||p.writers.some(w=>!str(w.handle)||!['','Yes','No'].includes(w.decree))||new Set(p.writers.map(w=>normalize(w.handle))).size!==p.writers.length))throw Error('Invalid decree responses');
+    if(p.usedByType!==undefined&&(!p.usedByType||typeof p.usedByType!=='object'||Array.isArray(p.usedByType)||Object.entries(p.usedByType).some(([type,names])=>!bankTypes.includes(type)||!Array.isArray(names)||!names.every(str))))throw Error('Invalid draw history');
+    if(p.lastDrawByType!==undefined&&(!p.lastDrawByType||typeof p.lastDrawByType!=='object'||Array.isArray(p.lastDrawByType)||Object.entries(p.lastDrawByType).some(([type,name])=>!bankTypes.includes(type)||!str(name))))throw Error('Invalid last draw');
+    if(p.sprintAwarded!==undefined&&typeof p.sprintAwarded!=='boolean')throw Error('Invalid sprint award status');
+    if(p.sprintText!==undefined&&!str(p.sprintText))throw Error('Invalid sprint');
+  }
+  if(s.privileges!==undefined){
+    const v=s.privileges;if(!v||!Array.isArray(v.ledger)||!v.prices||typeof v.prices!=='object'||Array.isArray(v.prices)||Object.entries(v.prices).some(([type,n])=>!bankTypes.includes(type)||!Number.isSafeInteger(n)||n<0)||!ids(v.ledger))throw Error('Invalid privileges');
+    const balances=new Map();for(const t of v.ledger){if(!['from','to','note','time'].every(k=>str(t[k]))||(!t.from.trim()&&!t.to.trim())||normalize(t.from)===normalize(t.to)||!Number.isSafeInteger(t.amount)||t.amount<=0)throw Error('Invalid privilege transaction');if(t.from){const h=normalize(t.from),n=(balances.get(h)||0)-t.amount;if(n<0)throw Error('Invalid privilege balance');balances.set(h,n);}if(t.to){const h=normalize(t.to);balances.set(h,(balances.get(h)||0)+t.amount);}}
+  }
   if(s.settings!==undefined && (!s.settings||typeof s.settings.sound!=='boolean'))throw Error('Invalid sound setting');
   return s;
 }

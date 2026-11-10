@@ -1,3 +1,5 @@
+import * as rules from './party-rules.js';
+import * as privilegeHelpers from './privileges.js';
 import {test} from 'node:test';
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
@@ -23,7 +25,7 @@ function boot(storage=new Map()){
   const categories=['Tarot','Potions','Poisons','Genre Genie','Magic Mirror','Story Spindle','Perspective Portal','Tense Tiara'].map(type=>{const e=new Element();e.dataset.category=type;return e;});
   const document={getElementById:get,createElement:()=>new Element(),querySelectorAll:s=>s==='nav button'?tabs:s==='[data-category]'?categories:s==='nav button, [data-category]'?[...tabs,...categories]:[],querySelector:s=>tabs.find(t=>s.includes(t.dataset.tab))||tabs[0]};
   const localStorage={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)};
-  const context=vm.createContext({...core,...sounds,...reveals,...starters,document,localStorage,crypto:webcrypto,console,Date,Blob,URL,navigator:{clipboard:{writeText:async()=>{}}},matchMedia:()=>({matches:reduced}),setTimeout:fn=>{timers.set(++nextTimer,fn);return nextTimer;},clearTimeout:id=>timers.delete(id),confirm:()=>true,prompt:()=>null});
+  const context=vm.createContext({...core,...sounds,...reveals,...starters,...rules,...privilegeHelpers,document,localStorage,crypto:webcrypto,console,Date,Blob,URL,navigator:{clipboard:{writeText:async()=>{}}},matchMedia:()=>({matches:reduced}),setTimeout:fn=>{timers.set(++nextTimer,fn);return nextTimer;},clearTimeout:id=>timers.delete(id),confirm:()=>true,prompt:()=>null});
   vm.runInContext(code,context);
   return {get,storage,context,setReduced:value=>reduced=value,saved:()=>JSON.parse(storage.get('royal-wheelhouse-v1')),category:type=>categories.find(b=>b.dataset.category===type).click()};
 }
@@ -68,4 +70,19 @@ test('sound choice survives reload, and legacy data gains Poisons only once',()=
   const s=a.saved();delete s.features;delete s.settings;s.banks=s.banks.filter(b=>b.type!=='Poisons');s.banks.filter(b=>b.type==='Tarot').forEach(b=>{b.entries=b.entries.filter(e=>['The Fool','The Magician','The Moon'].includes(e.name));b.entries.forEach(e=>delete e.reversedDescription);});s.parties[0].results.push({id:'legacy-card',handle:'@legacy',kind:'Tarot',value:'The Moon',description:'Original historical meaning',time:'2026-11-08T12:00:00Z'});const original=structuredClone(s.parties);
   a.storage.set('royal-wheelhouse-v1',JSON.stringify(s));const c=boot(a.storage);assert.deepEqual(c.saved().parties,original);assert.equal(c.saved().banks.filter(b=>b.type==='Poisons').length,1);assert.equal(boot(a.storage).saved().banks.filter(b=>b.type==='Poisons').length,1);
   assert.ok(c.saved().banks.find(b=>b.type==='Tarot').entries.every(e=>e.reversedDescription));
+});
+
+test('optional decree choices and free Mirror extras save per writer without trading',()=>{
+ const a=boot(),g=a.get;g('handle').value='@extra';g('handle').oninput();g('decreeChoice').value='No';g('decreeChoice').onchange();a.category('Magic Mirror');g('mirrorMode').value='extra';g('mirrorMode').onchange();assert.equal(g('spin').disabled,false);g('spin').click();const p=a.saved().parties[0];assert.equal(p.writers[0].decree,'No');assert.equal(p.results[0].type,'Magic Mirror');assert.equal(p.results[0].replacesId,undefined);assert.equal(boot(a.storage).saved().parties[0].writers[0].decree,'No');
+});
+test('sprint awards happen once; paid skip charges once; free spins and insufficient balances behave correctly',()=>{
+ const a=boot(),g=a.get;g('handle').value='@payer';g('handle').oninput();g('privilegesEnabled').checked=true;g('privilegesEnabled').onchange();g('sprintEntries').value='@payer | 1000\n@friend | 900';g('sprintEntries').oninput();g('previewSprint').click();g('awardSprint').click();g('awardSprint').onclick();assert.equal(privilegeHelpers.balance(a.saved().privileges.ledger,'@payer'),5);
+ g('paymentMode').value='privileges';a.setReduced(false);g('spin').click();assert.equal(privilegeHelpers.balance(a.saved().privileges.ledger,'@payer'),4);g('skipGrid').click();g('skipGrid').onclick();assert.equal(privilegeHelpers.balance(a.saved().privileges.ledger,'@payer'),4);
+ g('paymentMode').value='free';g('spin').click();g('skipGrid').click();assert.equal(privilegeHelpers.balance(a.saved().privileges.ledger,'@payer'),4);
+ g('handle').value='@broke';g('handle').oninput();g('paymentMode').value='privileges';const count=a.saved().parties[0].results.length;g('spin').click();assert.equal(a.saved().parties[0].results.length,count);assert.match(g('toast').textContent,/Not enough/);
+ const restored=boot(a.storage);assert.equal(privilegeHelpers.balance(restored.saved().privileges.ledger,'@payer'),4);assert.equal(restored.saved().parties[0].sprintAwarded,true);
+});
+
+test('new impromptu parties default privileges off while balances and archived decree choices survive',()=>{
+ const a=boot(),g=a.get;g('handle').value='@royal';g('handle').oninput();g('decreeChoice').value='Yes';g('decreeChoice').onchange();g('adjustHandle').value='@royal';g('adjustAmount').value='5';g('adjustPrivileges').click();g('newParty').click();g('date').value='2026-11-11';g('decreeEnabled').checked=false;g('partyForm').onsubmit({preventDefault(){}});const s=a.saved();assert.equal(s.parties[1].decreeEnabled,false);assert.equal(s.parties[1].privilegesEnabled,undefined);assert.equal(s.parties[0].writers[0].decree,'Yes');assert.equal(privilegeHelpers.balance(s.privileges.ledger,'@royal'),5);assert.equal(g('decreeChoiceLabel').hidden,true);assert.equal(g('decreePanel').hidden,true);core.validateBackup(s);
 });

@@ -1,0 +1,23 @@
+.partybar #decreeChoiceLabel{font-size:11px;display:flex;gap:5px;align-items:center}.partybar #decreeChoiceLabel[hidden]{display:none}.partybar #decreeChoice{font-size:11px;padding:3px;max-width:90px}.spinPayment{grid-column:2;grid-row:5;text-align:center;font-size:10px;color:#dcc79c}.spinPayment label{display:inline-flex;align-items:center;gap:5px}.spinPayment select{padding:3px;font-size:10px;max-width:180px}.spinPayment span{display:block;margin-top:3px}.games:has(.spinPayment:not([hidden])) .skipReveal{grid-row:6}.games:has(.spinPayment:not([hidden])) .hint{display:none}#privilegesDialog{width:min(700px,95vw);max-height:85vh;overflow:auto}#privilegesDialog h3{color:#efcc89;margin-top:22px}#privilegesDialog p{font-size:13px;line-height:1.5}#privilegesDialog label{display:block;margin:8px 0}#privilegesDialog input:not([type=checkbox]),#privilegesDialog select,#privilegesDialog textarea{width:100%}#privilegesDialog input[type=checkbox],.decreeSwitch input{width:auto;display:inline-block}#privilegeLedger{max-height:240px;overflow:auto}#privilegeBalances{display:flex;flex-wrap:wrap;gap:8px}#privilegeBalances p{border:1px solid #967349;border-radius:8px;padding:8px}.replacementControl #mirrorMode{margin-bottom:5px}#privilegesBody[hidden],.spinPayment[hidden],#tradeLabel[hidden]{display:none!important}
+@media(min-width:761px){.games:has(.replacementControl:not([hidden])){--scene-size:min(370px,calc(100dvh - 370px),33vw)}.games:has(.replacementControl:not([hidden])) .resultCallout>p:last-child:not(.reveal){max-height:100px}.partybar{max-width:100%;flex-wrap:wrap}.decrees .hostLinks{gap:3px}.decrees:has(#decreePanel[hidden]){grid-template-columns:1fr auto}}
+@media(max-width:760px){.spinPayment{margin:12px}.partybar{flex-wrap:wrap}}
+
+.tarotArt{position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#f5edd5;border-radius:8px}.tarotFace.withArt{padding:0;overflow:hidden}.tarotFace.withArt>.cardCrown,.tarotFace.withArt>.cardCelestial,.tarotFace.withArt>p,.tarotFace.withArt>.cardFoot{visibility:hidden}.tarotArt[hidden]{display:none}
+@media(min-width:761px){.games{--scene-size:min(350px,calc(100dvh - 410px),33vw)}.games:has(.replacementControl:not([hidden])){--scene-size:min(330px,calc(100dvh - 420px),32vw)}.partybar #decreeChoiceLabel{white-space:nowrap}.decrees .hostLinks{gap:2px}.hostLinks button{padding:3px 7px;font-size:10px}.games:has(.replacementControl:not([hidden])) .resultCallout .reveal{font-size:clamp(24px,2.6vw,35px)}.replacementControl label{font-size:10px}.replacementControl p{font-size:9px}.replacementControl #mirrorMode{padding:3px;margin-bottom:3px}}
+.partybar #decreeChoice,.spinPayment select{margin:0}.spinPayment label{margin:0}.spinPayment span{line-height:1.2}
+@media(min-width:761px){.games #gridStage:has(.spinPayment:not([hidden])){grid-template-rows:auto auto auto auto auto auto}.games #gridStage:has(.replacementControl:not([hidden])){grid-template-rows:auto auto auto auto auto auto}}
+@media(min-width:761px){
+ .games #gridStage{grid-template-rows:24px 0 minmax(0,auto) auto auto 0;row-gap:6px}
+ .games #gridStage:has(.spinPayment:not([hidden])){grid-template-rows:24px 0 minmax(0,auto) auto auto 0}
+ .games #gridStage:has(.replacementControl:not([hidden])){grid-template-rows:24px auto minmax(0,auto) auto auto 0}
+ .games #gridStage:has(.replacementControl:not([hidden])) .reveal{max-height:130px;overflow:auto}
+ .spinPayment{line-height:1.2}.spinPayment label{font-size:10px;line-height:1.2}.spinPayment select{height:24px;line-height:normal}.games .hint{grid-row:6;transform:translateY(8px)}
+}
+.stageControls{display:contents}
+@media(min-width:761px){
+ .games #gridStage,.games #gridStage:has(.spinPayment:not([hidden])),.games #gridStage:has(.replacementControl:not([hidden])){grid-template-rows:auto auto;row-gap:8px}
+ .games #gridStage>.magicScene,.games #gridStage>.wheelScene{grid-row:2}
+ .games .stageControls{display:flex;flex-direction:column;gap:8px;grid-column:2;grid-row:2;align-self:center;min-width:0;max-height:calc(100dvh - 360px);overflow:auto;padding:4px 18px;scrollbar-width:thin}
+ .games .stageControls .replacementControl{order:1;align-self:stretch;margin:0}.games .stageControls .resultCallout{order:2;padding:12px 14px;margin:0}.games .stageControls .primary{order:3;margin:0 auto;flex-shrink:0}.games .stageControls .spinPayment{order:4}.games .stageControls .skipReveal{order:5}.games .stageControls .hint{order:6;transform:none;margin:0}
+ .games .stageControls .reveal{font-size:clamp(26px,2.8vw,38px)}.games .stageControls .replacementControl{padding:5px 8px}.games .stageControls .replacementControl p{margin:2px 0}.games .stageControls .resultCallout>p:last-child:not(.reveal){max-height:90px;font-size:14px}
+}

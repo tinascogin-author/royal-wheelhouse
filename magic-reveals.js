@@ -1,3 +1,4 @@
+import {tarotImage} from './tarot-art.js';
 export const revealDetails={
   'Story Spindle':{button:'WEAVE MY STORY',waiting:'The threads are finding their tale…',duration:4800,scene:'spindleScene',title:'The Story Spindle'},
   'Perspective Portal':{button:'OPEN MY PORTAL',waiting:'Whose eyes will tell your story…',duration:4600,scene:'portalScene',title:'The Perspective Portal'},
@@ -22,10 +23,10 @@ export function createRevealStage($){
     return info;
   }
   function clearChase(){revealTimers.forEach(clearTimeout);revealTimers=[];}
-  function reset(){clearChase();for(let i=0;i<9;i++)$('portalTile'+i).classList.remove('lit','chosen');scenes.forEach(id=>$(id).classList.remove('performing','completed','reversed'));$('tarotName').textContent='';$('tarotOrientation').textContent='';$('mirrorText').textContent='';$('spindleText').textContent='';$('portalText').textContent='';$('tiaraText').textContent='';['pastGem','presentGem','futureGem'].forEach(id=>$(id).classList.remove('chosen'));}
-  function start(type,reduced){
+  function reset(){clearChase();for(let i=0;i<9;i++)$('portalTile'+i).classList.remove('lit','chosen');scenes.forEach(id=>$(id).classList.remove('performing','completed','reversed'));$('tarotName').textContent='';$('tarotArt').hidden=true;$('tarotFace').classList.remove('withArt');$('tarotOrientation').textContent='';$('mirrorText').textContent='';$('spindleText').textContent='';$('portalText').textContent='';$('tiaraText').textContent='';['pastGem','presentGem','futureGem'].forEach(id=>$(id).classList.remove('chosen'));}
+  function start(type,reduced,entry){
     const info=revealDetails[type]||revealDetails.Words,scene=$(info.scene);
-    reset();scene.classList.add('performing');
+    reset();scene.classList.add('performing');if(type==='Tarot'&&entry)setTarotArt(entry.name);
     let degrees=0;
     if(type==='Perspective Portal'&&!reduced){
       let time=0,step=0;while(time<info.duration-200){const tile=step%9;revealTimers.push(setTimeout(()=>{for(let i=0;i<9;i++)$('portalTile'+i).classList.toggle('lit',i===tile);},time));time+=65+step*7;step++;}
@@ -38,7 +39,9 @@ export function createRevealStage($){
     }
     return {duration:info.duration,degrees};
   }
+  function setTarotArt(name){const url=tarotImage(name);$('tarotArt').hidden=!url;$('tarotFace').classList.toggle('withArt',!!url);if(url){$('tarotArt').src=url;$('tarotArt').alt=name+' — traditional Rider–Waite–Smith illustration';} }
   function finish(type,entry){
+    if(type==='Tarot')setTarotArt(entry.name);
     clearChase();for(let i=0;i<9;i++){$('portalTile'+i).classList.remove('lit');$('portalTile'+i).classList.toggle('chosen',type==='Perspective Portal'&&portalEntries[i]?.name===entry.name);}
     const scene=$((revealDetails[type]||revealDetails.Words).scene);
     scene.classList.remove('performing');scene.classList.add('completed');

@@ -4,3 +4,4 @@ node_modules/
 *.tar.gz
 *backup*.json
 .openai/
+!assets/tarot-*.jpg
