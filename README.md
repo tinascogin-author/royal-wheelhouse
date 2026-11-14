@@ -26,7 +26,7 @@ On desktop, categories form a left-hand rail. The magical object sits beside the
 
 The cauldron spoon is layered above the illustrated potion, with its submerged end masked below the liquid line.
 
-Tarot draws the card and then independently selects Upright or Reversed, each with a 50% chance. A reversed card appears upside down; the large callout remains right-side up. The orientation and the meaning used for the draw are saved with the result, included in copied results, and preserved in backups. Earlier results are not retroactively changed.
+Tarot draws the card from the remaining cards, then takes an orientation from a securely shuffled batch of five Upright and five Reversed choices. Every ten new Tarot draws in a party therefore contain five of each. The remaining batch is autosaved and included in backups; changing writers or reloading does not restart it. Each new party starts with a fresh batch. Existing results are not rewritten. A reversed card appears upside down; the large callout remains right-side up. The orientation and the meaning used for the draw are saved with the result, included in copied results, and preserved in backups. Earlier results are not retroactively changed.
 
 For Tarot collections use `card name | upright meaning | reversed meaning` when pasting, uploading, or editing. Other collection types still use `name | optional description`. All 78 starter cards have separate upright and reversed descriptions. Custom cards without a reversed description show a clear missing-meaning message when reversed, rather than reusing the upright meaning. Both fields are editable: reversals are not universally negative. Starter Tarot descriptions are original, concise writing interpretations using familiar card themes, rather than predictions. Historical reference: [A. E. Waite’s public-domain Pictorial Key to the Tarot](https://sacred-texts.com/tarot/pkt/pkttp.htm).
 
@@ -102,3 +102,5 @@ Decorate the Palace offers Royal Classic, Christmas, and Halloween. The default 
 ## Discord copy formatting
 
 Copy all results and Discord chunks format results by writer, with one handle heading, bold spinner labels, and comma-separated Word draws from each collection. Other repeated spinner draws share a label with semicolon-separated entries. Trade markers stay attached to the individual traded result; Mirror replacement notes, meanings, decree responses, and privilege costs remain visible. The detailed on-screen registry and stored records are unchanged. Discord chunks are still at most 1,000 characters.
+
+The beta repeat-pool correction makes the Spin button and available-entry counter use the same pool. Tarot orientation batches are consumed only after a paid spin has passed its balance check; insufficient funds, exhausted collections, and skipped animations cannot consume extra orientations. Balanced batches can still contain short streaks; they guarantee five of each in ten, not strict alternation.

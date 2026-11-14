@@ -20,14 +20,14 @@ class Element {
   click(){if(!this.disabled)this.onclick?.();}
 }
 const code=(await readFile(new URL('./app.js',import.meta.url),'utf8')).replace(/^import .*?;\r?\n/gm,'');
-function boot(storage=new Map()){
+function boot(storage=new Map(),cryptoSource=webcrypto){
   const elements=new Map(),timers=new Map();let reduced=true,nextTimer=0;
   const get=id=>{if(!elements.has(id))elements.set(id,new Element());return elements.get(id);};
   const tabs=['play','banks','archives'].map(id=>{const e=new Element();e.dataset.tab=id;return e;});
   const categories=['Tarot','Potions','Poisons','Genre Genie','Magic Mirror','Story Spindle','Perspective Portal','Tense Tiara'].map(type=>{const e=new Element();e.dataset.category=type;return e;});
   const document={body:{dataset:{}},getElementById:get,createElement:()=>new Element(),querySelectorAll:s=>s==='nav button'?tabs:s==='[data-category]'?categories:s==='nav button, [data-category]'?[...tabs,...categories]:[],querySelector:s=>tabs.find(t=>s.includes(t.dataset.tab))||tabs[0]};
   const localStorage={getItem:k=>storage.get(k),setItem:(k,v)=>storage.set(k,v)};
-  const context=vm.createContext({...core,...sounds,...reveals,...starters,...rules,...privilegeHelpers,...palaces,...discordFormat,document,localStorage,crypto:webcrypto,console,Date,Blob,URL,navigator:{clipboard:{writeText:async()=>{}}},matchMedia:()=>({matches:reduced}),setTimeout:fn=>{timers.set(++nextTimer,fn);return nextTimer;},clearTimeout:id=>timers.delete(id),confirm:()=>true,prompt:()=>null});
+  const context=vm.createContext({...core,...sounds,...reveals,...starters,...rules,...privilegeHelpers,...palaces,...discordFormat,randomIndex:length=>core.randomIndex(length,cryptoSource),drawTarot:(entry,random)=>core.drawTarot(entry,random||((length)=>core.randomIndex(length,cryptoSource))),drawTarotBatch:(entry,p)=>core.drawTarotBatch(entry,p,length=>core.randomIndex(length,cryptoSource)),document,localStorage,crypto:cryptoSource,console,Date,Blob,URL,navigator:{clipboard:{writeText:async()=>{}}},matchMedia:()=>({matches:reduced}),setTimeout:fn=>{timers.set(++nextTimer,fn);return nextTimer;},clearTimeout:id=>timers.delete(id),confirm:()=>true,prompt:()=>null});
   vm.runInContext(code,context);
   return {get,storage,context,setReduced:value=>reduced=value,saved:()=>JSON.parse(storage.get('royal-wheelhouse-v1')),category:type=>categories.find(b=>b.dataset.category===type).click()};
 }
@@ -97,4 +97,39 @@ test('palace decorations persist and round-trip in backups without changing part
 
 test('Discord copy dialog uses grouped formatting while leaving the detailed saved registry unchanged',()=>{
  const a=boot(),g=a.get;g('handle').value='@copy-writer';g('handle').oninput();g('spin').click();g('spin').click();g('spin').click();const before=a.saved();g('chunks').click();const text=g('chunkList').children.map(part=>part.children[1].value).join('\n');assert.equal((text.match(/@copy-writer/g)||[]).length,1);assert.ok(text.includes('**The Royal Collection:**'));for(const r of before.parties[0].results)assert.ok(text.includes(r.value));assert.deepEqual(a.saved(),before);assert.ok(g('chunkList').children.every(part=>part.children[1].value.length<=1000));
+});
+
+// An RNG which always returns index zero makes a stale full-pool draw repeat immediately.
+const alwaysFirstCrypto={randomUUID:()=>webcrypto.randomUUID(),getRandomValues:array=>{array.fill(0);return array;}};
+test('actual Spin clicks consume the displayed pool for every non-repeat category and stop at exhaustion',()=>{
+ for(const type of ['Words','Tarot','Potions','Poisons','Genre Genie','Story Spindle']){
+  const seed=boot(),s=seed.saved(),b=s.banks.find(b=>b.type===type);b.entries=b.entries.slice(0,2);s.banks=[b];seed.storage.set('royal-wheelhouse-v1',JSON.stringify(s));
+  const a=boot(seed.storage,alwaysFirstCrypto),g=a.get;g('handle').value='@one';g('handle').oninput();g('spin').click();assert.equal(g('remaining').textContent,type==='Words'?'1 words remaining':'1 entries',type);
+  // Changing writers and reloading must not restore an already selected entry.
+  const restored=boot(a.storage,alwaysFirstCrypto),r=restored.get;r('handle').value='@two';r('handle').oninput();r('spin').click();
+  const results=restored.saved().parties[0].results;assert.equal(results.length,2,type);assert.notEqual(results[0].cardName||results[0].value,results[1].cardName||results[1].value,type);
+  assert.equal(r('spin').disabled,true,type);r('spin').onclick();assert.equal(restored.saved().parties[0].results.length,2,type);
+ }
+});
+test('actual Perspective spins cycle without replacement and avoid back-to-back repeats between rounds',()=>{
+ const a=boot(new Map(),alwaysFirstCrypto),g=a.get;g('handle').value='@perspective';g('handle').oninput();a.category('Perspective Portal');
+ for(let i=0;i<27;i++)g('spin').click();const values=a.saved().parties[0].results.map(r=>r.value);assert.equal(values.length,27);
+ for(let i=1;i<values.length;i++)assert.notEqual(values[i],values[i-1]);for(let i=0;i<27;i+=9)assert.equal(new Set(values.slice(i,i+9)).size,9);
+});
+
+test('actual Tarot spins balance each ten-draw batch across writers, reloads, and backups',()=>{
+ let a=boot(new Map(),alwaysFirstCrypto);const bank=a.saved().banks.find(b=>b.type==='Tarot');
+ for(let i=0;i<20;i++){
+  if(i%3===0)a=boot(a.storage,alwaysFirstCrypto);
+  const g=a.get;g('handle').value='@writer'+i;g('handle').oninput();a.category('Tarot');g('spin').click();
+  const s=a.saved(),r=s.parties[0].results.at(-1),entry=bank.entries.find(e=>e.name===r.cardName);assert.equal(r.description,r.orientation==='Reversed'?entry.reversedDescription:entry.description);assert.equal(g('tarotScene').classList.contains('reversed'),r.orientation==='Reversed');core.validateBackup(s);
+ }
+ const p=a.saved().parties[0];for(let i=0;i<20;i+=10){const batch=p.results.slice(i,i+10);assert.equal(batch.filter(r=>r.orientation==='Upright').length,5);assert.equal(batch.filter(r=>r.orientation==='Reversed').length,5);}assert.equal(new Set(p.results.map(r=>r.cardName)).size,20);assert.equal(p.tarotOrientations.length,0);
+});
+
+test('failed paid Tarot draws and Skip do not consume orientations; a new party has a fresh batch',()=>{
+ const a=boot(new Map(),alwaysFirstCrypto),g=a.get;g('handle').value='@batch';g('handle').oninput();a.category('Tarot');g('privilegesEnabled').checked=true;g('privilegesEnabled').onchange();g('paymentMode').value='privileges';g('spin').click();assert.equal(a.saved().parties[0].tarotOrientations,undefined);assert.equal(a.saved().parties[0].results.length,0);
+ g('paymentMode').value='free';a.setReduced(false);g('spin').click();const before=a.saved().parties[0].tarotOrientations;assert.equal(before.length,9);g('skipGrid').click();assert.deepEqual(a.saved().parties[0].tarotOrientations,before);
+ g('newParty').click();g('date').value='2026-11-14';g('partyForm').onsubmit({preventDefault(){}});assert.equal(a.saved().parties[1].tarotOrientations,undefined);assert.deepEqual(a.saved().parties[0].tarotOrientations,before);
+ const invalid=a.saved();invalid.parties[1].tarotOrientations=Array(6).fill('Upright');assert.throws(()=>core.validateBackup(invalid));
 });

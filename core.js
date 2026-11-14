@@ -22,6 +22,15 @@ export function drawTarot(entry,random=randomIndex){
   const description=orientation==='Upright'?entry.description:(entry.reversedDescription||'No reversed meaning has been entered for this card. Add one in Collections.');
   return {...entry,orientation,description,displayName:`${entry.name} (${orientation})`};
 }
+export function drawTarotBatch(entry,party,random=randomIndex){
+  if(!party.tarotOrientations?.length){
+    const batch=[...Array(5).fill('Upright'),...Array(5).fill('Reversed')];
+    for(let i=batch.length-1;i>0;i--){const j=random(i+1);[batch[i],batch[j]]=[batch[j],batch[i]];}
+    party.tarotOrientations=batch;
+  }
+  const orientation=party.tarotOrientations.shift();
+  return drawTarot(entry,()=>orientation==='Upright'?0:1);
+}
 export function chunks(text, max = 1000) {
   const result = [];
   while (text.length > max) {
@@ -63,6 +72,7 @@ export function validateBackup(s) {
     if(r.replacedById!==undefined){const replacement=p.results.find(x=>x.id===r.replacedById);if(!str(r.replacedById)||!replacement||replacement.replacesId!==r.id)throw Error('Invalid Mirror history');}
   }
   for(const p of s.parties){
+    if(p.tarotOrientations!==undefined&&(!Array.isArray(p.tarotOrientations)||p.tarotOrientations.length>10||p.tarotOrientations.some(o=>!['Upright','Reversed'].includes(o))||['Upright','Reversed'].some(o=>p.tarotOrientations.filter(x=>x===o).length>5)))throw Error('Invalid Tarot orientation batch');
     if(p.decreeEnabled!==undefined&&typeof p.decreeEnabled!=='boolean')throw Error('Invalid decree setting');
     if(p.privilegesEnabled!==undefined&&typeof p.privilegesEnabled!=='boolean')throw Error('Invalid privileges setting');
     if(p.writers!==undefined&&(!Array.isArray(p.writers)||p.writers.some(w=>!str(w.handle)||!['','Yes','No'].includes(w.decree))||new Set(p.writers.map(w=>normalize(w.handle))).size!==p.writers.length))throw Error('Invalid decree responses');
