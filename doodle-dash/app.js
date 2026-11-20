@@ -19,7 +19,50 @@ const save = () => localStorage.setItem(storageKey, JSON.stringify(data));
 const formatHandle = value => value.trim().replace(/^@+/, "").trim();
 const setStatus = message => { el("status").textContent = message; };
 
-for (const category of Object.keys(banks)) el("category").add(new Option(category));
+for (const category of Object.keys(banks)) {
+  el("category").add(new Option(category));
+  el("prompt-category").add(new Option(category));
+}
+
+const categoryPrompts = category => [...banks[category], ...(data.customPrompts?.[category] ?? [])];
+
+function renderPromptList() {
+  const category = el("prompt-category").value;
+  el("prompt-list").replaceChildren(...categoryPrompts(category).map(prompt => {
+    const item = document.createElement("li");
+    item.textContent = prompt;
+    return item;
+  }));
+}
+
+el("prompt-category").addEventListener("change", () => {
+  el("prompt-status").textContent = "";
+  renderPromptList();
+});
+el("add-prompts").addEventListener("submit", event => {
+  event.preventDefault();
+  const category = el("prompt-category").value;
+  const input = el("prompt-input");
+  const seen = new Set(categoryPrompts(category).map(prompt => prompt.toLowerCase()));
+  const additions = [];
+  for (const line of input.value.split(/\r?\n/)) {
+    const prompt = line.trim();
+    const key = prompt.toLowerCase();
+    if (!prompt || seen.has(key)) continue;
+    additions.push(prompt);
+    seen.add(key);
+  }
+  if (additions.length) {
+    data.customPrompts ??= {};
+    (data.customPrompts[category] ??= []).push(...additions);
+    save();
+    input.value = "";
+    renderPromptList();
+  }
+  el("prompt-status").textContent = additions.length
+    ? `Added ${additions.length} to ${category}.`
+    : "Enter at least one new prompt.";
+});
 
 function renderRound() {
   const { round, name } = data.party;
@@ -218,7 +261,7 @@ el("setup").addEventListener("submit", event => {
   const artist = formatHandle(el("artist").value);
   if (!artist) { setStatus("Enter the artist’s handle."); return; }
   const category = el("category").value;
-  const bank = banks[category];
+  const bank = categoryPrompts(category);
   const used = new Set(data.party.results.filter(result => result.category === category).map(result => result.prompt));
   const available = bank.filter(prompt => !used.has(prompt));
   const pool = available.length ? available : bank;
@@ -277,4 +320,5 @@ save();
 renderRound();
 renderResults();
 renderDiscussionList();
+renderPromptList();
 setInterval(updateClock, 200);

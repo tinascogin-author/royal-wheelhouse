@@ -52,6 +52,18 @@
 <h2>Party results</h2>
 <ol id="results"></ol>
 <button id="copy-results">Copy Discord results</button>
+<details id="prompt-library">
+<summary>Category prompts</summary>
+<form id="add-prompts">
+<label>Category <select id="prompt-category"></select></label>
+<label>New prompts, one per line
+<textarea id="prompt-input" rows="4" required></textarea>
+</label>
+<button type="submit">Add prompts</button>
+<p id="prompt-status" role="status"></p>
+</form>
+<details><summary>View prompts in this category</summary><ul id="prompt-list"></ul></details>
+</details>
 <details id="discussion-library">
 <summary>Discussion starters</summary>
 <ol id="discussion-list"></ol>

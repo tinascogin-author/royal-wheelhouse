@@ -100,7 +100,7 @@ section {
 }
 form { display: grid; gap: .7rem; margin-bottom: 1rem; }
 label { display: block; font-weight: 700; }
-input:not([type=checkbox]), select {
+input:not([type=checkbox]), select, textarea {
   width: 100%;
   display: block;
   margin-top: .25rem;
@@ -137,7 +137,7 @@ button, .button {
 #new-party, #no-guess { background: var(--gold); color: var(--ink); }
 button:not(:disabled):hover, .button:hover { transform: translateY(-2px); box-shadow: .12rem .24rem 0 var(--ink); }
 button:disabled { opacity: .55; cursor: default; box-shadow: none; }
-:is(button, .button, summary, input, select):focus-visible { outline: 3px solid #994000; outline-offset: 4px; }
+:is(button, .button, summary, input, select, textarea):focus-visible { outline: 3px solid #994000; outline-offset: 4px; }
 summary { cursor: pointer; font-weight: 800; }
 #private {
   background: var(--gold);
@@ -183,7 +183,7 @@ summary { cursor: pointer; font-weight: 800; }
   .player-display main.with-crowd { grid-template-columns: minmax(0, 1fr); }
   .player-display .with-crowd .stage { min-height: 16rem; }
 }
-#discussion-library { margin-block: 1rem; }
+#prompt-library, #discussion-library { margin-block: 1rem; }
 #discussion-list li { overflow-wrap: anywhere; }
 #crowd-preview { background: var(--gold); padding: .65rem; border-radius: .45rem; margin: 0; }
 #crowd-preview:empty { display: none; }
