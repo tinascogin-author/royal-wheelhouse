@@ -1,5 +1,5 @@
 const banks = {
-  "Books & Titles": ["The Secret Garden", "A Wrinkle in Time", "Charlotte’s Web", "Treasure Island", "The Little Prince", "Anne of Green Gables"],
+  "Book Titles": ["The Secret Garden", "A Wrinkle in Time", "Charlotte’s Web", "Treasure Island", "The Little Prince", "Anne of Green Gables"],
   "Writing & Storytelling": ["Plot twist", "Cliffhanger", "Writer’s block", "Flashback", "Unreliable narrator", "Happy ending"],
   "Genres, Tropes & Themes": ["Time travel", "Found family", "Haunted house", "Enemies to lovers", "Space opera", "Locked-room mystery"],
   "Art & Illustration": ["Self-portrait", "Watercolor", "Comic strip", "Stick figure", "Color wheel", "Still life"],
@@ -15,6 +15,23 @@ const makeParty = name => ({ name, competitions: [], results: [], round: null })
 const data = JSON.parse(localStorage.getItem(storageKey)) ?? {
   party: makeParty("Doodle Dash Party"), archive: [], competitions: [],
 };
+const oldBooksCategory = "Books & Titles";
+const booksCategory = "Book Titles";
+for (const party of [...data.archive, data.party]) {
+  for (const round of [...party.results, party.round].filter(Boolean)) {
+    if (round.category === oldBooksCategory) round.category = booksCategory;
+  }
+}
+if (data.customPrompts?.[oldBooksCategory]) {
+  const existing = new Map();
+  for (const prompt of [...banks[booksCategory], ...(data.customPrompts[booksCategory] ?? []), ...data.customPrompts[oldBooksCategory]]) {
+    const key = prompt.toLowerCase();
+    if (!existing.has(key)) existing.set(key, prompt);
+  }
+  data.customPrompts[booksCategory] = [...existing.values()].slice(banks[booksCategory].length);
+  delete data.customPrompts[oldBooksCategory];
+}
+
 const save = () => localStorage.setItem(storageKey, JSON.stringify(data));
 const formatHandle = value => value.trim().replace(/^@+/, "").trim();
 const setStatus = message => { el("status").textContent = message; };

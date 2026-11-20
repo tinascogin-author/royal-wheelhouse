@@ -267,3 +267,13 @@ header h1 {
 #party-form { margin: 0; }
 .dialog-actions { display: flex; flex-wrap: wrap; justify-content: end; gap: .65rem; margin-top: .4rem; }
 .dialog-actions .primary { background: var(--avocado); color: var(--ink); }
+.sketch-tips { margin-top: .65rem; padding-top: .65rem; border-top: 1px dashed #827653; }
+.sketch-tips summary { color: var(--teal); }
+.tips-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 15rem), 1fr));
+  gap: .65rem 1.25rem;
+  margin-top: .75rem;
+}
+.tips-grid h3 { font-size: 1rem; margin: 0 0 .2rem; }
+.tips-grid p { margin: 0; }
