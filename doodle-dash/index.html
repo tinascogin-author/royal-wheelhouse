@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Doodle Dash</title>
-<link rel="stylesheet" href="style.css">
-<script type="module" src="app.js"></script>
+<link rel="stylesheet" href="style.css?v=categories-2">
+<script type="module" src="app.js?v=categories-2"></script>
 </head>
 <body>
 <header><h1>Doodle Dash</h1><nav aria-label="Party controls"><a class="button" href="display.html" target="doodle-dash-display" rel="noopener">Open player display</a> <button id="new-party">New party</button></nav></header>
@@ -36,6 +36,7 @@
 <label>Category <select id="category"></select></label>
 <button type="submit">Spin for a prompt</button>
 </form>
+<a id="manage-prompts" href="#prompt-library">Manage categories and prompts</a>
 <details id="private" hidden>
 <summary>Private prompt · reveal off-screen</summary>
 <p id="prompt"></p><button id="copy-prompt">Copy prompt</button>
@@ -74,6 +75,10 @@
 <button id="copy-results">Copy Discord results</button>
 <details id="prompt-library">
 <summary>Category prompts</summary>
+<form id="add-category">
+<label>New category name <input id="category-name" required maxlength="80" placeholder="Christmas Book Titles"></label>
+<button type="submit">Create category</button>
+</form>
 <form id="add-prompts">
 <label>Category <select id="prompt-category"></select></label>
 <label>New prompts, one per line
@@ -82,11 +87,10 @@
 <button type="submit">Add prompts</button>
 
 </form>
-<h3>Custom prompts</h3>
-<p id="custom-prompts-empty">No custom prompts in this category yet.</p>
-<ul id="custom-prompt-list"></ul>
 <p id="prompt-status" role="status"></p>
-<details><summary>View starter prompts</summary><ul id="prompt-list"></ul></details>
+<h3>Prompts in this category</h3>
+<p id="prompts-empty">No prompts in this category yet.</p>
+<ul id="prompt-list"></ul>
 </details>
 
 <h2>Competitions</h2>

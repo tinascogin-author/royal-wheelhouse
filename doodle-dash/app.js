@@ -36,54 +36,83 @@ const save = () => localStorage.setItem(storageKey, JSON.stringify(data));
 const formatHandle = value => value.trim().replace(/^@+/, "").trim();
 const setStatus = message => { el("status").textContent = message; };
 
-for (const category of Object.keys(banks)) {
+const categoryNames = () => [...Object.keys(banks), ...(data.specialCategories ?? [])];
+const categoryPrompts = category => {
+  if (Object.hasOwn(data.promptBanks ?? {}, category)) return data.promptBanks[category];
+  const starters = Object.hasOwn(banks, category) ? banks[category] : [];
+  const custom = Object.hasOwn(data.customPrompts ?? {}, category) ? data.customPrompts[category] : [];
+  return [...starters, ...custom];
+};
+
+function saveCategoryPrompts(category, prompts) {
+  data.promptBanks = { ...data.promptBanks, [category]: prompts };
+  save();
+}
+
+for (const category of categoryNames()) {
   el("category").add(new Option(category));
   el("prompt-category").add(new Option(category));
 }
 
-const categoryPrompts = category => [...banks[category], ...(data.customPrompts?.[category] ?? [])];
+el("manage-prompts").addEventListener("click", () => {
+  el("prompt-library").open = true;
+  el("prompt-category").value = el("category").value;
+  renderPromptList();
+});
+
+el("add-category").addEventListener("submit", event => {
+  event.preventDefault();
+  const input = el("category-name");
+  const name = input.value.trim();
+  if (!name || [oldBooksCategory, ...categoryNames()].some(category => category.toLowerCase() === name.toLowerCase())) {
+    el("prompt-status").textContent = "Enter a new category name.";
+    return;
+  }
+  (data.specialCategories ??= []).push(name);
+  saveCategoryPrompts(name, []);
+  el("category").add(new Option(name));
+  el("prompt-category").add(new Option(name));
+  el("prompt-category").value = name;
+  input.value = "";
+  renderPromptList();
+  el("prompt-status").textContent = `Created ${name}. Add prompts to make it playable.`;
+  el("prompt-input").focus();
+});
 
 function renderPromptList() {
   const category = el("prompt-category").value;
-  const starterItems = banks[category].map(prompt => {
-    const item = document.createElement("li");
-    item.textContent = prompt;
-    return item;
-  });
-  const custom = data.customPrompts?.[category] ?? [];
-  const customItems = custom.map((prompt, index) => {
+  const prompts = categoryPrompts(category);
+  const items = prompts.map((prompt, index) => {
     const item = document.createElement("li");
     const form = document.createElement("form");
     form.className = "edit-prompt";
     const input = document.createElement("input");
     input.value = prompt;
     input.required = true;
-    input.setAttribute("aria-label", `Edit custom prompt: ${prompt}`);
+    input.setAttribute("aria-label", `Edit prompt: ${prompt}`);
     const update = document.createElement("button");
     update.type = "submit";
     update.textContent = "Save changes";
     const remove = document.createElement("button");
     remove.type = "button";
     remove.textContent = "Remove";
-    remove.setAttribute("aria-label", `Remove custom prompt: ${prompt}`);
+    remove.setAttribute("aria-label", `Remove prompt: ${prompt}`);
     form.addEventListener("submit", event => {
       event.preventDefault();
       const replacement = input.value.trim();
       const key = replacement.toLowerCase();
-      const duplicates = [...banks[category], ...custom.filter((_, position) => position !== index)];
+      const duplicates = prompts.filter((_, position) => position !== index);
       if (!replacement || duplicates.some(entry => entry.toLowerCase() === key)) {
         el("prompt-status").textContent = "Enter a non-empty prompt that isn’t already in this category.";
         return;
       }
-      custom[index] = replacement;
-      save();
+      saveCategoryPrompts(category, prompts.with(index, replacement));
       renderPromptList();
       el("prompt-status").textContent = "Prompt updated.";
     });
     remove.addEventListener("click", () => {
       if (!confirm(`Remove “${prompt}” from future draws?`)) return;
-      custom.splice(index, 1);
-      save();
+      saveCategoryPrompts(category, prompts.toSpliced(index, 1));
       renderPromptList();
       el("prompt-status").textContent = "Prompt removed.";
     });
@@ -91,9 +120,8 @@ function renderPromptList() {
     item.append(form);
     return item;
   });
-  el("prompt-list").replaceChildren(...starterItems);
-  el("custom-prompt-list").replaceChildren(...customItems);
-  el("custom-prompts-empty").hidden = custom.length > 0;
+  el("prompt-list").replaceChildren(...items);
+  el("prompts-empty").hidden = prompts.length > 0;
 }
 
 el("prompt-category").addEventListener("change", () => {
@@ -114,9 +142,7 @@ el("add-prompts").addEventListener("submit", event => {
     seen.add(key);
   }
   if (additions.length) {
-    data.customPrompts ??= {};
-    (data.customPrompts[category] ??= []).push(...additions);
-    save();
+    saveCategoryPrompts(category, [...categoryPrompts(category), ...additions]);
     input.value = "";
     renderPromptList();
   }
@@ -323,6 +349,10 @@ el("setup").addEventListener("submit", event => {
   if (!artist) { setStatus("Enter the artist’s handle."); return; }
   const category = el("category").value;
   const bank = categoryPrompts(category);
+  if (!bank.length) {
+    setStatus("Add prompts to this category before spinning.");
+    return;
+  }
   const used = new Set(data.party.results.filter(result => result.category === category).map(result => result.prompt));
   const available = bank.filter(prompt => !used.has(prompt));
   const pool = available.length ? available : bank;
