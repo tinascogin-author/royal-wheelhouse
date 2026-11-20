@@ -79,7 +79,33 @@ el("add-category").addEventListener("submit", event => {
   el("prompt-input").focus();
 });
 
+const promptKey = prompt => prompt.trim().replace(/\s+/g, " ").toLowerCase();
+
+el("check-prompt-duplicates").addEventListener("click", () => {
+  const category = el("prompt-category").value;
+  const prompts = categoryPrompts(category);
+  const groups = new Map();
+  prompts.forEach((prompt, index) => {
+    const key = promptKey(prompt);
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(index + 1);
+  });
+  const duplicates = [...groups.values()].filter(rows => rows.length > 1);
+  const matches = el("duplicate-matches");
+  matches.replaceChildren(...duplicates.map(rows => {
+    const item = document.createElement("li");
+    item.textContent = `“${prompts[rows[0] - 1]}” · rows ${rows.join(", ")}`;
+    return item;
+  }));
+  matches.hidden = duplicates.length === 0;
+  el("duplicate-status").textContent = duplicates.length
+    ? `Found ${duplicates.length} duplicate ${duplicates.length === 1 ? "group" : "groups"} in ${category}.`
+    : `No duplicates found in ${category}.`;
+});
+
 function renderPromptList() {
+  el("duplicate-status").textContent = "";
+  el("duplicate-matches").hidden = true;
   const category = el("prompt-category").value;
   const prompts = categoryPrompts(category);
   const items = prompts.map((prompt, index) => {
@@ -100,9 +126,9 @@ function renderPromptList() {
     form.addEventListener("submit", event => {
       event.preventDefault();
       const replacement = input.value.trim();
-      const key = replacement.toLowerCase();
+      const key = promptKey(replacement);
       const duplicates = prompts.filter((_, position) => position !== index);
-      if (!replacement || duplicates.some(entry => entry.toLowerCase() === key)) {
+      if (!replacement || duplicates.some(entry => promptKey(entry) === key)) {
         el("prompt-status").textContent = "Enter a non-empty prompt that isn’t already in this category.";
         return;
       }
@@ -132,11 +158,11 @@ el("add-prompts").addEventListener("submit", event => {
   event.preventDefault();
   const category = el("prompt-category").value;
   const input = el("prompt-input");
-  const seen = new Set(categoryPrompts(category).map(prompt => prompt.toLowerCase()));
+  const seen = new Set(categoryPrompts(category).map(promptKey));
   const additions = [];
   for (const line of input.value.split(/\r?\n/)) {
     const prompt = line.trim();
-    const key = prompt.toLowerCase();
+    const key = promptKey(prompt);
     if (!prompt || seen.has(key)) continue;
     additions.push(prompt);
     seen.add(key);

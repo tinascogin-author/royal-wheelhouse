@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Doodle Dash</title>
-<link rel="stylesheet" href="style.css?v=categories-2">
-<script type="module" src="app.js?v=categories-2"></script>
+<link rel="stylesheet" href="style.css?v=duplicate-check">
+<script type="module" src="app.js?v=duplicate-check"></script>
 </head>
 <body>
 <header><h1>Doodle Dash</h1><nav aria-label="Party controls"><a class="button" href="display.html" target="doodle-dash-display" rel="noopener">Open player display</a> <button id="new-party">New party</button></nav></header>
@@ -89,8 +89,11 @@
 </form>
 <p id="prompt-status" role="status"></p>
 <h3>Prompts in this category</h3>
+<button type="button" id="check-prompt-duplicates">Check for duplicates</button>
+<p id="duplicate-status" role="status"></p>
+<ul id="duplicate-matches" hidden></ul>
 <p id="prompts-empty">No prompts in this category yet.</p>
-<ul id="prompt-list"></ul>
+<ol id="prompt-list"></ol>
 </details>
 
 <h2>Competitions</h2>
