@@ -85,3 +85,11 @@ window.addEventListener("storage", event => {
 });
 readParty();
 setInterval(updateDisplay, 200);
+
+const tips = [...document.getElementById("tip-rotation").children];
+let tipIndex = 0;
+setInterval(() => {
+  tips[tipIndex].hidden = true;
+  tipIndex = (tipIndex + 1) % tips.length;
+  tips[tipIndex].hidden = false;
+}, 12_000);

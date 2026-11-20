@@ -277,3 +277,12 @@ header h1 {
 }
 .tips-grid h3 { font-size: 1rem; margin: 0 0 .2rem; }
 .tips-grid p { margin: 0; }
+
+.rotating-tips { display: grid; grid-template-columns: minmax(9rem, auto) minmax(0, 1fr); gap: .45rem 1.25rem; }
+.rotating-tips h3 { color: var(--teal); font-size: 1.05rem; margin: 0; }
+.rotating-tips h4 { font-size: 1rem; margin: 0 0 .15rem; }
+.rotating-tips p { margin: 0; }
+#tip-rotation { display: grid; }
+@media (max-width: 43rem) {
+  .rotating-tips { grid-template-columns: minmax(0, 1fr); }
+}
