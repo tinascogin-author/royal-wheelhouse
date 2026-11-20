@@ -33,7 +33,7 @@ function updateDisplay() {
   }
   const label = phaseLabels[phase] ?? "Waiting for the next round";
   if (phaseLabel.textContent !== label) phaseLabel.textContent = label;
-  const showCrowd = phase === "draw" && Boolean(round.crowdCard);
+  const showCrowd = ["draw-ready", "draw"].includes(phase) && Boolean(round.crowdCard);
   crowdPanel.hidden = !showCrowd;
   layout.classList.toggle("with-crowd", showCrowd);
   const card = showCrowd ? round.crowdCard : "";
@@ -46,11 +46,37 @@ function updateDisplay() {
   if (clock.textContent !== value) clock.textContent = value;
 }
 
+function resultItem(text) {
+  const item = document.createElement("li");
+  item.textContent = text;
+  return item;
+}
+
+function renderResults(results) {
+  const counts = new Map();
+  for (const { winner } of results) {
+    const key = winner.toLowerCase();
+    const score = counts.get(key) ?? { winner, points: 0 };
+    score.points++;
+    counts.set(key, score);
+  }
+  const leaders = [...counts.values()]
+    .sort((a, b) => b.points - a.points || a.winner.localeCompare(b.winner));
+  document.getElementById("leaderboard").replaceChildren(...leaders.map(({ winner, points }) =>
+    resultItem(`@${winner} · ${points} ${points === 1 ? "point" : "points"}`)));
+  document.getElementById("completed-rounds").replaceChildren(...results.slice().reverse().map(
+    ({ artist, prompt, winner, guessed }) =>
+      resultItem(`@${artist} drew “${prompt}” · @${winner} +1 (${guessed ? "correct guess" : "unguessed"})`)));
+  document.getElementById("leaderboard-empty").hidden = leaders.length > 0;
+  document.getElementById("results-empty").hidden = results.length > 0;
+}
+
 function readParty() {
   const party = JSON.parse(localStorage.getItem(storageKey))?.party;
   round = party?.round;
   partyName.textContent = party?.name ?? "";
   roundLabel.textContent = round ? `@${round.artist} · ${round.category}` : "";
+  renderResults(party?.results ?? []);
   updateDisplay();
 }
 

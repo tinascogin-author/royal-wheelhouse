@@ -2,7 +2,7 @@
   color-scheme: light;
   font: 100%/1.5 "Trebuchet MS", system-ui, sans-serif;
   color: #251c3a;
-  background: #e9e2ff;
+  background: #fbefd9 url("doodle-paper.png") repeat center top / 42rem auto;
   --ink: #251c3a;
   --paper: #fffdf6;
   --lime: #dcf87c;
@@ -152,8 +152,8 @@ summary { cursor: pointer; font-weight: 800; }
 #results li { margin-block: .3rem; }
 .competition { border-top: 1px dashed #8b78a7; padding: .75rem 0; }
 [hidden] { display: none !important; }
-.player-display main { display: block; }
-.player-display .stage { min-height: 62vh; }
+.player-display main { display: grid; grid-template-columns: minmax(0, 1fr); }
+.player-display .stage { min-height: clamp(14rem, 38vh, 23rem); }
 .player-display #round { font-size: clamp(1.5rem, 5vw, 3.5rem); }
 .player-display #phase { font-size: clamp(1.25rem, 4vw, 2.5rem); }
 .player-display #clock { font-size: clamp(3rem, 10vw, 7rem); }
@@ -207,4 +207,16 @@ summary { cursor: pointer; font-weight: 800; }
   font-weight: 800;
   margin-right: .2rem;
 }
-.player-display main:not(.with-crowd) .drawing-key { margin-top: 1.35rem; }
+.audience-results {
+  display: grid;
+  grid-column: 1 / -1;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.35rem;
+}
+.audience-results section { padding: 1rem 1.25rem; }
+.audience-results ol { margin: 0; padding-left: 1.5rem; max-height: 10rem; overflow: auto; }
+.audience-results ol:empty { display: none; }
+.audience-results li + li { margin-top: .3rem; }
+@media (max-width: 43rem) {
+  .audience-results { grid-template-columns: minmax(0, 1fr); }
+}

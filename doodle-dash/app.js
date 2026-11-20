@@ -265,7 +265,12 @@ el("setup").addEventListener("submit", event => {
   const used = new Set(data.party.results.filter(result => result.category === category).map(result => result.prompt));
   const available = bank.filter(prompt => !used.has(prompt));
   const pool = available.length ? available : bank;
-  data.party.round = { artist, category, prompt: pool[Math.floor(Math.random() * pool.length)], phase: "ready", deadline: null };
+  const cards = discussionCards();
+  const crowdIndex = data.party.results.length % cards.length;
+  data.party.round = {
+    artist, category, prompt: pool[Math.floor(Math.random() * pool.length)],
+    phase: "ready", deadline: null, crowdMode: "discussion", crowdIndex, crowdCard: cards[crowdIndex],
+  };
   setStatus("");
   save();
   renderRound();
