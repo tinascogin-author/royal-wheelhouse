@@ -15,7 +15,8 @@ const clock = document.getElementById("clock");
 const crowdPanel = document.getElementById("crowd-panel");
 const crowdTitle = document.getElementById("crowd-title");
 const crowdCard = document.getElementById("crowd-card");
-const layout = crowdPanel.parentElement;
+const resultsPanel = document.getElementById("results-panel");
+const leaderboardPanel = document.getElementById("leaderboard-panel");
 let round;
 
 function updateDisplay() {
@@ -33,12 +34,9 @@ function updateDisplay() {
   }
   const label = phaseLabels[phase] ?? "Waiting for the next round";
   if (phaseLabel.textContent !== label) phaseLabel.textContent = label;
-  const showCrowd = ["draw-ready", "draw"].includes(phase) && Boolean(round.crowdCard);
-  crowdPanel.hidden = !showCrowd;
-  layout.classList.toggle("with-crowd", showCrowd);
-  const card = showCrowd ? round.crowdCard : "";
+  const card = round?.crowdCard || "Waiting for a discussion starter.";
   if (crowdCard.textContent !== card) crowdCard.textContent = card;
-  crowdTitle.textContent = showCrowd && round.crowdMode === "joke" ? "Dad joke" : "Discuss in Discord";
+  crowdTitle.textContent = round?.crowdMode === "joke" ? "Dad joke" : "Discussion";
   clock.hidden = !deadline;
   if (!deadline) return;
   const seconds = Math.ceil((deadline - now) / 1000);
@@ -74,6 +72,10 @@ function renderResults(results) {
 function readParty() {
   const party = JSON.parse(localStorage.getItem(storageKey))?.party;
   round = party?.round;
+  const view = party?.audienceView ?? "results";
+  resultsPanel.hidden = view !== "results";
+  leaderboardPanel.hidden = view !== "leaderboard";
+  crowdPanel.hidden = view !== "discussion";
   partyName.textContent = party?.name ?? "";
   roundLabel.textContent = round ? `@${round.artist} · ${round.category}` : "";
   renderResults(party?.results ?? []);
@@ -88,8 +90,16 @@ setInterval(updateDisplay, 200);
 
 const tips = [...document.getElementById("tip-rotation").children];
 let tipIndex = 0;
+const symbols = [...document.getElementById("audience-symbols").children];
+let symbolPage = 0;
+const updateSymbols = () => {
+  symbols.forEach((symbol, index) => { symbol.hidden = Math.floor(index / 4) !== symbolPage; });
+};
+updateSymbols();
 setInterval(() => {
   tips[tipIndex].hidden = true;
   tipIndex = (tipIndex + 1) % tips.length;
   tips[tipIndex].hidden = false;
+  symbolPage = (symbolPage + 1) % Math.ceil(symbols.length / 4);
+  updateSymbols();
 }, 12_000);

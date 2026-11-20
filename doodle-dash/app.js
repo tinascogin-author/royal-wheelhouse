@@ -36,6 +36,14 @@ const save = () => localStorage.setItem(storageKey, JSON.stringify(data));
 const formatHandle = value => value.trim().replace(/^@+/, "").trim();
 const setStatus = message => { el("status").textContent = message; };
 
+const audienceView = el("audience-view");
+audienceView.value = data.party.audienceView ?? "results";
+audienceView.addEventListener("change", () => {
+  data.party.audienceView = audienceView.value;
+  save();
+});
+el("open-cheat-sheet").addEventListener("click", () => el("cheat-sheet").showModal());
+
 const categoryNames = () => [...Object.keys(banks), ...(data.specialCategories ?? [])];
 const categoryPrompts = category => {
   if (Object.hasOwn(data.promptBanks ?? {}, category)) return data.promptBanks[category];
@@ -440,6 +448,7 @@ el("party-form").addEventListener("submit", event => {
     data.archive.push(data.party);
   }
   data.party = { ...makeParty(name), id: crypto.randomUUID() };
+  audienceView.value = "results";
   el("artist").value = "";
   el("guesser").value = "";
   setStatus("");
