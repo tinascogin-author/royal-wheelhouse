@@ -17,6 +17,7 @@ const crowdTitle = document.getElementById("crowd-title");
 const crowdCard = document.getElementById("crowd-card");
 const resultsPanel = document.getElementById("results-panel");
 const leaderboardPanel = document.getElementById("leaderboard-panel");
+const codePanel = document.getElementById("code-panel");
 let round;
 
 function updateDisplay() {
@@ -76,6 +77,7 @@ function readParty() {
   resultsPanel.hidden = view !== "results";
   leaderboardPanel.hidden = view !== "leaderboard";
   crowdPanel.hidden = view !== "discussion";
+  codePanel.hidden = view !== "code";
   partyName.textContent = party?.name ?? "";
   roundLabel.textContent = round ? `@${round.artist} · ${round.category}` : "";
   renderResults(party?.results ?? []);
