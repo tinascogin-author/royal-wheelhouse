@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#242922">
+  <title>The Sketchy Wheelhouse</title>
+  <link rel="manifest" href="./manifest.webmanifest">
+  <link rel="stylesheet" href="./studio.css">
+  <script type="module" src="./studio.js"></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand"><span>Sketchy Prompt Party</span><h1>The Sketchy Wheelhouse</h1></div>
+    <nav aria-label="Studio tools">
+      <button id="new-party">New Party</button><button id="archives">Archives</button>
+      <button id="banks">Prompt Banks</button><button id="backup">Backup</button><button id="sound" aria-pressed="false">Sound Off</button>
+    </nav>
+  </header>
+  <main>
+    <p id="file-preview" class="workbench" hidden>
+      Open the <a href="http://127.0.0.1:4173/sketchy/">Sketchy Wheelhouse browser preview</a>
+      to start a party. If it is offline, run <code>node server.js</code> from the GitHub checkout first.
+    </p>
+    <script>
+      if (location.protocol === 'file:') document.getElementById('file-preview').hidden = false;
+    </script>
+    <section class="workbench" aria-label="Party controls">
+      <div id="party-label">No party open</div>
+      <form id="artist-form">
+        <label class="sr-only" for="handle">Discord handle</label>
+        <input id="handle" name="handle" placeholder="Discord handle" maxlength="80" required>
+        <button type="submit">Start Artist Turn</button>
+      </form>
+      <button id="copy-party">Copy Party for Discord</button>
+    </section>
+    <section class="room" aria-label="Studio floor">
+      <aside class="menu" aria-label="Spins"><div id="spins"></div><p id="available"></p></aside>
+      <section id="stage" class="stage" aria-label="Reveal">
+        <div class="stage-sign" id="stage-label">The Studio</div>
+        <div class="machine-space">
+          <div class="jar" id="jar" aria-hidden="true">
+            <div class="jar-mouth"></div><div class="water"><div class="pigments"></div></div>
+            <div class="glass"></div><div class="jar-mark">Brush rinse</div>
+          </div>
+          <div class="wheel" id="wheel" hidden aria-hidden="true">
+            <div class="axle"></div><div class="drum"><div id="reel"></div></div><div class="pointer"></div>
+          </div>
+        </div>
+        <div id="reveal" role="status" aria-live="polite"></div>
+        <button id="skip" hidden>Skip Animation</button>
+      </section>
+      <aside class="clipboard" aria-label="Artist assignment">
+        <div class="clip" aria-hidden="true"></div>
+        <h2 id="artist-name">Assignment</h2>
+        <p id="theme"></p>
+        <div id="assignment"></div>
+        <button id="records">Party Records</button>
+      </aside>
+    </section>
+  </main>
+  <footer>Background photo by <a href="https://unsplash.com/@jsmorris_" target="_blank" rel="noopener">Joseph Morris</a> on <a href="https://unsplash.com/photos/empty-closed-room-Tac8FvqAnEw" target="_blank" rel="noopener">Unsplash</a></footer>
+  <div id="notice" role="status" aria-live="polite"></div>
+  <dialog id="dialog" aria-labelledby="dialog-title">
+    <div class="dialog-head"><h2 id="dialog-title"></h2><button id="close-dialog" aria-label="Close">×</button></div>
+    <div id="dialog-body"></div>
+  </dialog>
+</body>
+</html>
