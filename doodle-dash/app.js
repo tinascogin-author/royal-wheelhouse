@@ -298,9 +298,26 @@ el("add-competition").addEventListener("submit", event => {
   save();
   renderResults();
 });
+const partyDialog = el("party-dialog");
+const partyNameInput = el("party-name");
 el("new-party").addEventListener("click", () => {
-  const name = window.prompt("Name the new party", "Doodle Dash Party")?.trim();
-  if (!name || (data.party.round && !confirm("Start a new party and discard the unfinished round?"))) return;
+  partyNameInput.value = "Doodle Dash Party";
+  partyNameInput.setCustomValidity("");
+  el("unfinished-round").hidden = !data.party.round;
+  partyDialog.showModal();
+  partyNameInput.select();
+});
+el("cancel-party").addEventListener("click", () => partyDialog.close());
+partyNameInput.addEventListener("input", () => partyNameInput.setCustomValidity(""));
+el("party-form").addEventListener("submit", event => {
+  event.preventDefault();
+  const name = partyNameInput.value.trim();
+  if (!name) {
+    partyNameInput.setCustomValidity("Enter a party name.");
+    partyNameInput.reportValidity();
+    return;
+  }
+  partyDialog.close();
   if (data.party.results.length) {
     data.party.round = null;
     data.archive.push(data.party);

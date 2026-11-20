@@ -9,6 +9,17 @@
 </head>
 <body>
 <header><h1>Doodle Dash</h1><nav aria-label="Party controls"><a class="button" href="display.html" target="doodle-dash-display" rel="noopener">Open player display</a> <button id="new-party">New party</button></nav></header>
+<dialog id="party-dialog" aria-labelledby="party-dialog-title">
+<form id="party-form">
+<h2 id="party-dialog-title">Start a new party</h2>
+<label>Party name <input id="party-name" required maxlength="80" autofocus></label>
+<p id="unfinished-round" hidden>Starting a new party will discard the unfinished round.</p>
+<div class="dialog-actions">
+<button type="button" id="cancel-party">Cancel</button>
+<button type="submit" class="primary">Start party</button>
+</div>
+</form>
+</dialog>
 <main>
 <section class="stage" aria-label="Current round">
 <p id="party"></p>
@@ -46,6 +57,15 @@
 <p id="crowd-preview" aria-live="polite"></p>
 <button type="button" id="next-crowd-card">Next</button>
 </div>
+<details id="discussion-library">
+<summary>Manage discussion starters</summary>
+<ol id="discussion-list"></ol>
+<form id="add-discussion">
+<label>Add a discussion starter <input id="discussion-input" required maxlength="220"></label>
+<button type="submit">Add to list</button>
+<p id="discussion-status" role="status"></p>
+</form>
+</details>
 <p id="status" role="status"></p>
 </section>
 <section class="party-results">
@@ -64,15 +84,7 @@
 </form>
 <details><summary>View prompts in this category</summary><ul id="prompt-list"></ul></details>
 </details>
-<details id="discussion-library">
-<summary>Discussion starters</summary>
-<ol id="discussion-list"></ol>
-<form id="add-discussion">
-<label>Add a discussion starter <input id="discussion-input" required maxlength="220"></label>
-<button type="submit">Add to list</button>
-<p id="discussion-status" role="status"></p>
-</form>
-</details>
+
 <h2>Competitions</h2>
 <p>Select every leaderboard this party counts toward.</p>
 <div id="competitions"></div>
@@ -84,9 +96,9 @@
 <section class="drawing-key" aria-label="Drawing symbols">
 <h2>Drawing symbols</h2>
 <ul>
-<li><span aria-hidden="true">👂</span> <strong>Ear</strong> · Sounds like</li>
-<li><span aria-hidden="true">→</span> <strong>Arrow</strong> · Look at this part</li>
-<li><span aria-hidden="true">▯ ▯</span> <strong>One box per word</strong> · Word count</li>
+<li><span class="symbol" aria-hidden="true">≋</span> <strong>Sound waves</strong> · Sounds like</li>
+<li><span class="symbol" aria-hidden="true">↗</span> <strong>Arrow</strong> · Look at this part</li>
+<li><span class="symbol" aria-hidden="true">□ □</span> <strong>One box per word</strong> · Word count</li>
 </ul>
 </section>
 </main>
