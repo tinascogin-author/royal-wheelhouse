@@ -45,11 +45,55 @@ const categoryPrompts = category => [...banks[category], ...(data.customPrompts?
 
 function renderPromptList() {
   const category = el("prompt-category").value;
-  el("prompt-list").replaceChildren(...categoryPrompts(category).map(prompt => {
+  const starterItems = banks[category].map(prompt => {
     const item = document.createElement("li");
     item.textContent = prompt;
     return item;
-  }));
+  });
+  const custom = data.customPrompts?.[category] ?? [];
+  const customItems = custom.map((prompt, index) => {
+    const item = document.createElement("li");
+    const form = document.createElement("form");
+    form.className = "edit-prompt";
+    const input = document.createElement("input");
+    input.value = prompt;
+    input.required = true;
+    input.setAttribute("aria-label", `Edit custom prompt: ${prompt}`);
+    const update = document.createElement("button");
+    update.type = "submit";
+    update.textContent = "Save changes";
+    const remove = document.createElement("button");
+    remove.type = "button";
+    remove.textContent = "Remove";
+    remove.setAttribute("aria-label", `Remove custom prompt: ${prompt}`);
+    form.addEventListener("submit", event => {
+      event.preventDefault();
+      const replacement = input.value.trim();
+      const key = replacement.toLowerCase();
+      const duplicates = [...banks[category], ...custom.filter((_, position) => position !== index)];
+      if (!replacement || duplicates.some(entry => entry.toLowerCase() === key)) {
+        el("prompt-status").textContent = "Enter a non-empty prompt that isn’t already in this category.";
+        return;
+      }
+      custom[index] = replacement;
+      save();
+      renderPromptList();
+      el("prompt-status").textContent = "Prompt updated.";
+    });
+    remove.addEventListener("click", () => {
+      if (!confirm(`Remove “${prompt}” from future draws?`)) return;
+      custom.splice(index, 1);
+      save();
+      renderPromptList();
+      el("prompt-status").textContent = "Prompt removed.";
+    });
+    form.append(input, update, remove);
+    item.append(form);
+    return item;
+  });
+  el("prompt-list").replaceChildren(...starterItems);
+  el("custom-prompt-list").replaceChildren(...customItems);
+  el("custom-prompts-empty").hidden = custom.length > 0;
 }
 
 el("prompt-category").addEventListener("change", () => {

@@ -286,3 +286,7 @@ header h1 {
 @media (max-width: 43rem) {
   .rotating-tips { grid-template-columns: minmax(0, 1fr); }
 }
+#custom-prompt-list { list-style: none; padding: 0; }
+.edit-prompt { display: flex; flex-wrap: wrap; align-items: stretch; }
+.edit-prompt input { flex: 1 1 14rem; width: auto; min-width: 0; margin: 0; }
+.edit-prompt button:last-child { background: var(--gold); color: var(--ink); }
