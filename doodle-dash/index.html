@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doodle Dash</title>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="app.js"></script>
+</head>
+<body>
+<header><h1>Doodle Dash</h1><nav aria-label="Party controls"><a class="button" href="display.html" target="doodle-dash-display" rel="noopener">Open player display</a> <button id="new-party">New party</button></nav></header>
+<main>
+<section class="stage" aria-label="Current round">
+<p id="party"></p>
+<h2 id="round">Ready to doodle?</h2>
+<p id="phase">Set up a round to begin.</p>
+<div id="clock" role="timer">1:00</div>
+<button id="advance" hidden></button>
+<p id="instruction"></p>
+</section>
+<section aria-label="Host controls">
+<form id="setup">
+<h2>Set up a round</h2>
+<label>Artist <input id="artist" required maxlength="80" placeholder="@handle"></label>
+<label>Category <select id="category"></select></label>
+<button type="submit">Spin for a prompt</button>
+</form>
+<details id="private" hidden>
+<summary>Private prompt · reveal off-screen</summary>
+<p id="prompt"></p><button id="copy-prompt">Copy prompt</button>
+</details>
+<form id="score" hidden>
+<h2>Award the useless point</h2>
+<label>First correct guesser <input id="guesser" maxlength="80" required placeholder="@handle"></label>
+<button type="submit">Award guesser</button>
+<button type="button" id="no-guess">No correct guess · award artist</button>
+</form>
+<div id="crowd-controls" hidden>
+<label>During drawing
+<select id="crowd-mode">
+<option value="off">Timer only</option>
+<option value="discussion">Discussion starter</option>
+<option value="joke">Dad joke</option>
+</select>
+</label>
+<p id="crowd-preview" aria-live="polite"></p>
+<button type="button" id="next-crowd-card">Next</button>
+</div>
+<p id="status" role="status"></p>
+</section>
+<section class="party-results">
+<h2>Party results</h2>
+<ol id="results"></ol>
+<button id="copy-results">Copy Discord results</button>
+<details id="discussion-library">
+<summary>Discussion starters</summary>
+<ol id="discussion-list"></ol>
+<form id="add-discussion">
+<label>Add a discussion starter <input id="discussion-input" required maxlength="220"></label>
+<button type="submit">Add to list</button>
+<p id="discussion-status" role="status"></p>
+</form>
+</details>
+<h2>Competitions</h2>
+<p>Select every leaderboard this party counts toward.</p>
+<div id="competitions"></div>
+<form id="add-competition">
+<label>Competition name <input id="competition-name" required maxlength="80" placeholder="Christmas 2026"></label>
+<button type="submit">Add competition</button>
+</form>
+</section>
+<section class="drawing-key" aria-label="Drawing symbols">
+<h2>Drawing symbols</h2>
+<ul>
+<li><span aria-hidden="true">👂</span> <strong>Ear</strong> · Sounds like</li>
+<li><span aria-hidden="true">→</span> <strong>Arrow</strong> · Look at this part</li>
+<li><span aria-hidden="true">▯ ▯</span> <strong>One box per word</strong> · Word count</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

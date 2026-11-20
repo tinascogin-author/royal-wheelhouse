@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Doodle Dash · Player Display</title>
+<link rel="stylesheet" href="style.css">
+<script type="module" src="display.js"></script>
+</head>
+<body class="player-display">
+<header><h1>Doodle Dash</h1></header>
+<main>
+<section class="stage" aria-label="Current round">
+<p id="party"></p>
+<h2 id="round"></h2>
+<p id="phase" aria-live="polite"></p>
+<div id="clock" role="timer" hidden></div>
+</section>
+<section id="crowd-panel" hidden>
+<h2 id="crowd-title"></h2>
+<p id="crowd-card" aria-live="polite"></p>
+</section>
+<section class="drawing-key" aria-label="Drawing symbols">
+<h2>Drawing symbols</h2>
+<ul>
+<li><span aria-hidden="true">👂</span> <strong>Ear</strong> · Sounds like</li>
+<li><span aria-hidden="true">→</span> <strong>Arrow</strong> · Look at this part</li>
+<li><span aria-hidden="true">▯ ▯</span> <strong>One box per word</strong> · Word count</li>
+</ul>
+</section>
+</main>
+</body>
+</html>

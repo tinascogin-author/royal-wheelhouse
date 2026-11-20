@@ -10,3 +10,4 @@ cpSync('sketchy',join(destination,'sketchy'),{
   filter:source=>!/\.(md|test\.js)$/.test(source),
 });
 console.log('Prepared static review copy in '+destination);
+cpSync('doodle-dash',join(destination,'doodle-dash'),{recursive:true});
