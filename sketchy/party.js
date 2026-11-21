@@ -1,4 +1,4 @@
-import { WHEELS, REQUIRED, STARTERS } from './banks.js';
+import { BANKS, BRIEF, WHEELS, REQUIRED, STARTERS } from './banks.js';
 
 export const key = value => value.trim().normalize('NFKC').toLowerCase();
 export const handleKey = value => key(value).replace(/^@+/, '').trim();
@@ -10,7 +10,7 @@ export const parse = line => {
 export function initialState() {
   return {
     version: 1, active: null, sound: false, parties: [],
-    banks: Object.fromEntries(WHEELS.map(name => [name, STARTERS[name].map(parse)])),
+    banks: Object.fromEntries(BANKS.map(name => [name, STARTERS[name].map(parse)])),
   };
 }
 
@@ -35,6 +35,7 @@ export function pick(entries) {
 }
 
 export function newArtist(party, handle) {
+  if (!party.theme) throw new Error('Spin the Artist’s Brief first.');
   const normalized = handleKey(handle);
   if (!normalized) throw new Error('Enter a Discord handle.');
   if (party.artists.some(artist => handleKey(artist.handle) === normalized)) {
@@ -44,6 +45,21 @@ export function newArtist(party, handle) {
   party.artists.push(artist);
   party.current = artist.id;
   return artist;
+}
+
+export function drawBrief(party, entries) {
+  if (party.theme) throw new Error('This party already has an Artist’s Brief.');
+  const entry = pick(available(party, entries));
+  party.theme = entry.title;
+  party.briefCue = entry.cue;
+  party.retired.push(key(entry.title));
+  return entry;
+}
+
+export function restoreState(data) {
+  if (!validate(data)) throw new Error('Invalid saved party data');
+  if (!Object.hasOwn(data.banks, BRIEF)) data.banks[BRIEF] = STARTERS[BRIEF].map(parse);
+  return data;
 }
 
 export function draw(party, artist, wheel, entries, replacement = false) {
@@ -71,10 +87,12 @@ export function resultText(artist) {
 
 export function partyText(party) {
   return [
-    '**Theme of the Week** — ' + party.theme,
+    briefText(party),
     ...party.artists.filter(artist => !nextRequired(artist)).map(resultText),
   ].join('\n\n');
 }
+
+export const briefText = party => '**' + BRIEF + '** — ' + party.theme + (party.briefCue ? ' · ' + party.briefCue : '');
 
 const string = value => typeof value === 'string';
 const record = value => value && typeof value === 'object' && !Array.isArray(value);
@@ -83,12 +101,14 @@ const entry = value => record(value) && string(value.title) && !!value.title.tri
 export function validate(data) {
   if (!record(data) || data.version !== 1 || typeof data.sound !== 'boolean' ||
       !record(data.banks) || !WHEELS.every(name => Array.isArray(data.banks[name]) && data.banks[name].every(entry)) ||
+      (Object.hasOwn(data.banks, BRIEF) && (!Array.isArray(data.banks[BRIEF]) || !data.banks[BRIEF].every(entry))) ||
       !Array.isArray(data.parties)) return false;
   const validArtist = artist => record(artist) && string(artist.id) &&
     string(artist.handle) && !!handleKey(artist.handle) && [null, 'CURSED', 'ESCAPED'].includes(artist.verdict) &&
     record(artist.results) && Object.entries(artist.results).every(([name, result]) => WHEELS.includes(name) && entry(result));
   const validParty = party => record(party) && string(party.id) && string(party.date) && /^\d{4}-\d{2}-\d{2}$/.test(party.date) &&
-    string(party.theme) && Array.isArray(party.retired) && party.retired.every(string) &&
+    string(party.theme) && (party.briefCue === undefined || string(party.briefCue)) &&
+    Array.isArray(party.retired) && party.retired.every(string) &&
     Array.isArray(party.artists) && party.artists.every(validArtist) &&
     new Set(party.artists.map(artist => handleKey(artist.handle))).size === party.artists.length &&
     new Set(party.artists.map(artist => artist.id)).size === party.artists.length &&

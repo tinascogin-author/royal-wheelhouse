@@ -1,5 +1,5 @@
-import { WHEELS } from './banks.js';
-import { initialState, key, handleKey, parse, validate, available, nextRequired, newArtist, draw, pick, partyText, resultText } from './party.js';
+import { BANKS, BRIEF, WHEELS } from './banks.js';
+import { initialState, restoreState, key, handleKey, parse, available, nextRequired, newArtist, draw, drawBrief, pick, briefText, partyText, resultText } from './party.js';
 
 const STORAGE = 'sketchy-wheelhouse-v1';
 const $ = id => document.getElementById(id);
@@ -7,11 +7,7 @@ let state = initialState();
 let startupError = '';
 try {
   const raw = localStorage.getItem(STORAGE);
-  if (raw) {
-    const saved = JSON.parse(raw);
-    if (!validate(saved)) throw new Error('Invalid saved party data');
-    state = saved;
-  }
+  if (raw) state = restoreState(JSON.parse(raw));
 } catch {
   startupError = 'Saved party data could not be read. Restore a backup before making changes.';
 }
@@ -99,17 +95,21 @@ function render() {
   const artist = current();
   const waiting = nextRequired(artist);
   const animating = !!animation;
+  const briefRevealed = !!active?.theme && !(animating && show?.name === BRIEF);
   $('party-label').textContent = active ? 'Party · ' + active.date : 'No party open';
+  $('spin-brief').hidden = briefRevealed;
+  $('spin-brief').disabled = !active || animating || !available(active, bank(BRIEF)).length;
+  $('party-brief').textContent = briefRevealed ? BRIEF + ' · ' + active.theme : '';
   const startArtist = $('artist-form').querySelector('button');
-  startArtist.disabled = !active || animating || !!waiting;
-  $('handle').disabled = !active || animating || !!waiting;
+  startArtist.disabled = !briefRevealed || animating || !!waiting;
+  $('handle').disabled = startArtist.disabled;
   $('copy-party').disabled = animating || !active?.artists.some(item => !nextRequired(item));
   $('records').disabled = !active || animating;
   for (const id of ['new-party', 'archives', 'backup', 'banks']) $(id).disabled = animating;
   $('sound').textContent = state.sound ? 'Sound On' : 'Sound Off';
   $('sound').setAttribute('aria-pressed', state.sound);
   $('artist-name').textContent = artist ? displayHandle(artist) : 'Assignment';
-  $('theme').textContent = active?.theme || '';
+  $('theme').textContent = briefRevealed ? active.theme : '';
   const buttons = names.map(name => {
     const curse = name === 'Curse Jar';
     const completed = curse ? !!artist?.verdict : Object.hasOwn(artist?.results ?? {}, name);
@@ -138,7 +138,7 @@ function render() {
     if (entry) add(name + (name === 'Creative Twist' && artist.verdict === 'CURSED' ? ' · Required' : ''), entry.title, entry.cue);
   }
   $('assignment').replaceChildren(dl);
-  const wheelVisible = WHEELS.includes(show?.name ?? waiting);
+  const wheelVisible = BANKS.includes(show?.name ?? waiting);
   $('jar').hidden = wheelVisible;
   $('wheel').hidden = !wheelVisible;
   $('jar').className = 'jar' + (animating && !wheelVisible ? ' spinning' : '') +
@@ -151,7 +151,10 @@ function render() {
     if (show.entry.cue) $('reveal').append(element('small', show.entry.cue));
   }
   if (!show && !artist) {
-    $('reveal').textContent = active ? 'Enter a Discord handle and select Start Artist Turn.' : 'Open a new party to begin.';
+    if (!active) $('reveal').textContent = 'Open a new party to begin.';
+    else if (briefRevealed) $('reveal').textContent = 'Enter a Discord handle and select Start Artist Turn.';
+    else $('reveal').textContent = available(active, bank(BRIEF)).length ?
+      'Spin the Artist’s Brief when everyone is ready.' : 'Add an Artist’s Brief in Prompt Banks.';
   }
   if (!show && waiting === 'Curse Jar') $('reveal').textContent = 'Select Rinse Your Fate to swirl the jar.';
   if (wheelVisible && !animating) {
@@ -209,7 +212,8 @@ function finish() {
   animation.motion?.cancel();
   animation = null;
   render();
-  $('spins').querySelector('button.live')?.focus({ preventScroll: true });
+  const nextControl = show?.name === BRIEF ? $('handle') : $('spins').querySelector('button.live');
+  nextControl?.focus({ preventScroll: true });
 }
 
 function spin(name, replacementArtist) {
@@ -231,11 +235,17 @@ function spin(name, replacementArtist) {
     return;
   }
   if ($('dialog').open) $('dialog').close();
+  revealSpin(name, result, entries);
+}
+
+function revealSpin(name, result, entries) {
+  const curse = name === 'Curse Jar';
   show = { name, entry: result };
   const duration = reducedMotion.matches ? 0 : curse ? 3000 : 4000;
   if (!duration) {
     render();
     playSound(curse, 0);
+    if (name === BRIEF) $('handle').focus();
     return;
   }
   animation = { timer: setTimeout(finish, duration) };
@@ -275,20 +285,16 @@ function newPartyDialog() {
   date.required = true;
   const now = new Date();
   date.value = new Date(now - now.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
-  const theme = element('textarea');
-  theme.rows = 3;
-  theme.required = true;
-  open('New Party', formWith('Open Studio', [field('Party Date', date), field('Theme of the Week', theme)], () => {
-    if (!theme.value.trim()) throw new Error('Enter a Theme of the Week.');
+  open('New Party', formWith('Open Studio', [field('Party Date', date)], () => {
     save(() => {
       const id = crypto.randomUUID();
-      state.parties.push({ id, date: date.value, theme: theme.value.trim(), retired: [], artists: [], current: null });
+      state.parties.push({ id, date: date.value, theme: '', retired: [], artists: [], current: null });
       state.active = id;
     });
     show = null;
     $('dialog').close();
     render();
-    $('handle').focus();
+    $('spin-brief').focus();
   }));
 }
 
@@ -296,7 +302,7 @@ function archives() {
   const rows = [...state.parties].reverse().map(item => {
     const row = element('div');
     row.className = 'record-row';
-    row.append(element('span', item.date + ' · ' + item.theme), button(item.id === state.active ? 'Resume Party' : 'Open Party', () => {
+    row.append(element('span', item.date + (item.theme ? ' · ' + item.theme : '')), button(item.id === state.active ? 'Resume Party' : 'Open Party', () => {
       save(() => { state.active = item.id; });
       show = null;
       $('dialog').close();
@@ -309,7 +315,7 @@ function archives() {
 
 function banks() {
   const select = element('select');
-  for (const name of WHEELS) select.add(new Option(name));
+  for (const name of BANKS) select.add(new Option(name));
   const activeBank = nextRequired(current());
   if (WHEELS.includes(activeBank)) select.value = activeBank;
   const entries = element('textarea');
@@ -363,7 +369,7 @@ function records(artistId) {
   const actions = element('div');
   actions.className = 'actions';
   actions.append(button('All Records', () => records()), button('Edit Handle', () => editHandle(artist)),
-    button('Copy for Discord', () => copy('**Theme of the Week** — ' + active.theme + '\n\n' + resultText(artist))));
+    button('Copy for Discord', () => copy(briefText(active) + '\n\n' + resultText(artist))));
   const rows = WHEELS.filter(name => Object.hasOwn(artist.results, name)).map(name => {
     const row = element('div');
     row.className = 'record-row';
@@ -430,7 +436,7 @@ function backup() {
   open('Backup', button('Export Backup', downloadBackup), formWith('Restore Backup', [field('Sketchy Wheelhouse backup', file)], async () => {
     let data;
     try { data = JSON.parse(await file.files[0].text()); } catch { throw new Error('Choose a readable Sketchy Wheelhouse backup.'); }
-    if (!validate(data)) throw new Error('That file is not a valid Sketchy Wheelhouse backup.');
+    try { data = restoreState(data); } catch { throw new Error('That file is not a valid Sketchy Wheelhouse backup.'); }
     open('Restore Backup', element('p', 'Restoring replaces the parties and prompt banks saved in this browser.'),
       button('Export Current Backup', downloadBackup), button('Replace Saved Data', () => {
         localStorage.setItem(STORAGE, JSON.stringify(data));
@@ -456,6 +462,13 @@ $('artist-form').addEventListener('submit', event => {
   });
 });
 $('new-party').onclick = newPartyDialog;
+$('spin-brief').onclick = () => run(() => {
+  const active = party();
+  if (!active || animation || active.theme) return;
+  const entries = available(active, bank(BRIEF));
+  const result = save(() => drawBrief(active, entries));
+  revealSpin(BRIEF, result, entries);
+});
 $('archives').onclick = archives;
 $('banks').onclick = banks;
 $('backup').onclick = backup;

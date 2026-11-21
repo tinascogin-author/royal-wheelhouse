@@ -4,7 +4,8 @@ From the Royal Wheelhouse GitHub checkout, run `node server.js` and open
 [The Sketchy Wheelhouse](http://127.0.0.1:4173/sketchy/). The Pages build includes this
 app under `sketchy/`. It stores its own data in the browser.
 
-Open a new party, enter its free-text theme, then enter an artist's Discord handle.
+Open a new dated party. When everyone is ready, spin the shared Artist’s Brief at
+the top, then enter an artist's Discord handle.
 Use the side menu to reveal their curse status, then Subject, Setting, and Mood.
 Creative Twist is required after Mood when cursed. Choose any available extras,
 then add the next artist. Copy Party for Discord groups completed assignments by handle.

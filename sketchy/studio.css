@@ -20,6 +20,9 @@ nav, .workbench, #artist-form, .actions { display: flex; gap: .55rem; flex-wrap:
 main { width: min(95%, 1440px); margin: 1rem auto; }
 .workbench { background: #222a24ee; border: 1px solid #aa9872; padding: .65rem .8rem; border-radius: .45rem; }
 #party-label { font-weight: 700; margin-right: auto; }
+.brief-controls { display: flex; align-items: center; flex-wrap: wrap; gap: .55rem; overflow-wrap: anywhere; }
+#party-brief { color: var(--gold); }
+#spin-brief:not(:disabled) { background: var(--gold); color: var(--ink); }
 input, textarea, select { color: var(--cream); background: #171e19; border: 1px solid #a59877; border-radius: .3rem; padding: .5rem .62rem; max-width: 100%; }
 #handle { width: 12rem; }
 .room { display: grid; grid-template-columns: minmax(155px, 205px) minmax(270px, 1fr) minmax(235px, 300px);

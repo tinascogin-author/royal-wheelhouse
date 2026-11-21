@@ -1,4 +1,4 @@
-const CACHE = 'sketchy-studio-v3';
+const CACHE = 'sketchy-studio-v4';
 const ASSETS = ['./', './index.html', './studio.css', './studio.js', './party.js', './banks.js',
   './studio.jpg', './manifest.webmanifest', './icon-192.png', './icon-512.png'];
 

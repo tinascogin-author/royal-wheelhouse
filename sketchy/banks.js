@@ -1,8 +1,15 @@
 export const WHEELS = ['Subject', 'Setting', 'Mood', 'Creative Twist', 'Artistic Style', 'Action', 'Genre'];
 export const REQUIRED = WHEELS.slice(0, 3);
+export const BRIEF = 'Artist’s Brief';
+export const BANKS = [BRIEF, ...WHEELS];
 export const MEDIUM_CUE = 'Use it, adapt it, or ask me to spin again.';
 
 export const STARTERS = {
+  [BRIEF]: [
+    'Second Chances', 'Little Luxuries', 'Things We Leave Behind', 'Unexpected Company',
+    'In Between', 'A Place to Belong', 'Ordinary Magic', 'Out of Place',
+    'The Last Light', 'Small Victories', 'Changing Seasons', 'Under the Surface',
+  ],
   Subject: [
     'A chipped teacup', 'A rain boot with a split seam', 'A paper crown with a bent point',
     'A key with a frayed ribbon', 'A pigeon with one white wing', 'A tailor with a pincushion bracelet',

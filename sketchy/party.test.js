@@ -1,6 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { initialState, newArtist, nextRequired, draw, available, validate, partyText } from './party.js';
+import { BRIEF } from './banks.js';
+import { initialState, newArtist, nextRequired, draw, drawBrief, restoreState, available, validate, partyText } from './party.js';
 
 function setup() {
   const state = initialState();
@@ -9,6 +10,22 @@ function setup() {
   state.active = party.id;
   return { state, party, banks: state.banks };
 }
+
+test('new parties draw one shared brief before artist turns and retain it on restore', () => {
+  const { state, party } = setup();
+  party.theme = '';
+  delete state.banks[BRIEF];
+  assert.throws(() => newArtist(party, 'Painter'), /Brief first/);
+  restoreState(state);
+  assert.equal(state.banks[BRIEF].length, 12);
+  const entry = { title: 'Little Luxuries', cue: 'Find one small pleasure.' };
+  drawBrief(party, [entry]);
+  newArtist(party, 'Painter');
+  assert.throws(() => drawBrief(party, [entry]), /already has/);
+  assert.equal(available(party, [entry]).length, 0);
+  assert.equal(partyText(party), '**Artist’s Brief** — Little Luxuries · Find one small pleasure.');
+  assert.equal(restoreState(JSON.parse(JSON.stringify(state))).parties[0].theme, entry.title);
+});
 
 test('curse precedes the three required wheels, then Creative Twist gates extras', () => {
   const { state, party, banks } = setup();
